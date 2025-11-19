@@ -1,5 +1,10 @@
 // src/apis/usersApi.js
-const BASE_URL = "http://localhost:5000/api/users";
+
+// 🌍 BASE URL dinámica (dev vs producción)
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "/api/users"
+    : "http://localhost:5000/api/users";
 
 export async function getUsers() {
   const res = await fetch(BASE_URL);
