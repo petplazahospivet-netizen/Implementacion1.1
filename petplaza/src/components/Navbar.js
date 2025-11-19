@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 import { getAppointments } from "../apis/appointmentsApi";
 import { getInventoryAlerts } from "../apis/productsApi";
+import { getLoteActivo } from "../apis/facturasApi";
 
 import EscudoIcon from "../assets/icons/escudo-de-seguridad.png";
 import EstetoscopioIcon from "../assets/icons/estetoscopio.png";
@@ -61,15 +62,6 @@ const Navbar = ({ user, onLogout }) => {
   ];
   const roleData = roles.find((r) => r.value === user?.role) || null;
 
-  const isLocal =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1");
-
-  const API_BASE = isLocal
-    ? "http://localhost:5000"
-    : "https://petplaza-backend.onrender.com";
-
   // ==================== CITAS ====================
   const fetchAppointments = async () => {
     try {
@@ -87,22 +79,19 @@ const Navbar = ({ user, onLogout }) => {
     }
   };
 
-  // ==================== CAI (CORREGIDO PARA RENDER) ====================
+  // ==================== CAI (USANDO API FACTURAS) ====================
   const fetchCAIStatus = async () => {
     try {
-      const path = location.pathname.toLowerCase(); // 🔥 Render usa minúsculas
-
+      const path = location.pathname.toLowerCase();
       if (path === "/facturacion") {
-        const res = await fetch(`${API_BASE}/api/facturas/loteActivo`);
-        if (!res.ok) throw new Error("Error al obtener CAI");
-
-        const data = await res.json();
-        setAlertaCAI(data.alerta ? data : null);
+        const data = await getLoteActivo(); // usa la misma BASE_URL que facturas
+        setAlertaCAI(data?.alerta ? data : null);
       } else {
         setAlertaCAI(null);
       }
     } catch (err) {
       console.error("Error verificando CAI:", err);
+      setAlertaCAI(null);
     }
   };
 
@@ -117,18 +106,17 @@ const Navbar = ({ user, onLogout }) => {
     }
   };
 
-  // ==================== REFRESCO ====================
+  // ==================== REFRESCO INICIAL ====================
   useEffect(() => {
     fetchAppointments();
-    fetchCAIStatus(); // 🔥 ahora funciona en Render
+    fetchCAIStatus();
   }, [location.pathname]);
 
   // ==================== INVENTARIO: actualización automática ====================
   useEffect(() => {
     let interval;
     if (location.pathname === "/Inventory") {
-      setInvAlerts(null);
-
+      setInvAlerts(null); // fuerza "Cargando..."
       const lastDataRef = { current: null };
 
       const checkInventory = async () => {
@@ -172,10 +160,12 @@ const Navbar = ({ user, onLogout }) => {
     setShowModal(true);
     setIsClosing(false);
   };
+
   const closeModal = () => {
     setIsClosing(true);
     setTimeout(() => setShowModal(false), 300);
   };
+
   const handleLogout = () => {
     if (onLogout) onLogout();
     navigate("/");
@@ -230,8 +220,10 @@ const Navbar = ({ user, onLogout }) => {
                 ) : (
                   appointments.map((a) => (
                     <div key={a._id} className="notification-item fade-in">
-                      <strong>{a.ownerId?.full_name || "Desconocido"}</strong> –{" "}
-                      {a.petId?.nombre || "Mascota"}
+                      <strong>
+                        {a.ownerId?.full_name || "Desconocido"}
+                      </strong>{" "}
+                      – {a.petId?.nombre || "Mascota"}
                       <br />
                       {formatDate(a.fecha, a.hora)}
                     </div>
@@ -295,7 +287,8 @@ const Navbar = ({ user, onLogout }) => {
                     Restantes: <strong>{alertaCAI.restantes}</strong>
                   </p>
                   <p>
-                    Días restantes: <strong>{alertaCAI.diasRestantes}</strong>
+                    Días restantes:{" "}
+                    <strong>{alertaCAI.diasRestantes}</strong>
                   </p>
                   <p>CAI: {alertaCAI.cai}</p>
                   <p>
