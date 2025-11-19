@@ -65,4 +65,22 @@ router.put("/:id/activar", async (req, res) => {
   }
 });
 
+// 🔍 Obtener lote CAI activo
+router.get("/activo", async (req, res) => {
+  try {
+    const loteActivo = await LoteFactura.findOne({ activo: true }).sort({
+      createdAt: -1,
+    });
+
+    if (!loteActivo) {
+      return res.status(404).json({ mensaje: "No hay lote activo" });
+    }
+
+    res.json(loteActivo);
+  } catch (error) {
+    console.error("Error obteniendo lote activo:", error);
+    res.status(500).json({ mensaje: "Error obteniendo lote activo" });
+  }
+});
+
 module.exports = router;
