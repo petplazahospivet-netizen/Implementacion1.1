@@ -67,21 +67,21 @@ const login = async (req, res) => {
     // 2️⃣ Si no existe, intentamos como teléfono (con control de duplicados)
     if (!user) {
       const phoneCandidates = [];
-      if (raw) phoneCandidates.push(raw);           // "+50488586201" o "8858-6201"
+      if (raw) phoneCandidates.push(raw); // "+50488586201" o "8858-6201"
       if (cleaned && cleaned !== raw) phoneCandidates.push(cleaned); // "50488586201" o "88586201"
       if (last8 && !phoneCandidates.includes(last8)) {
-        phoneCandidates.push(last8);                // "88586201"
+        phoneCandidates.push(last8); // "88586201"
       }
 
       // 🔁 Variantes normalizadas con "+"
       if (cleaned) {
-        const plusCleaned = `+${cleaned}`;          // "+50488586201" o "+88586201"
+        const plusCleaned = `+${cleaned}`; // "+50488586201" o "+88586201"
         if (!phoneCandidates.includes(plusCleaned)) {
           phoneCandidates.push(plusCleaned);
         }
       }
       if (last8 && last8.length === 8) {
-        const honduras = `+504${last8}`;           // "+50488586201" (caso típico HN)
+        const honduras = `+504${last8}`; // "+50488586201" (caso típico HN)
         if (!phoneCandidates.includes(honduras)) {
           phoneCandidates.push(honduras);
         }
@@ -494,7 +494,16 @@ const sendRecoveryLink = async (req, res) => {
     user.resetTokenExpires = Date.now() + 60 * 60 * 1000; // 1 hora
     await user.save();
 
-    const link = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    // 🔥 NUEVO: construir correctamente la URL del frontend
+    const baseFrontend =
+      process.env.FRONTEND_URL || // 1️⃣ Si está en el .env
+      req.headers.origin || // 2️⃣ Dominio desde donde llamó el front
+      (process.env.NODE_ENV === "production"
+        ? "https://implementacion1-1.onrender.com" // 3️⃣ Tu frontend en Render
+        : "http://localhost:3000"); // 4️⃣ Front local
+
+    const cleanBase = baseFrontend.replace(/\/$/, ""); // quitar "/" final si lo hubiera
+    const link = `${cleanBase}/reset-password?token=${token}`;
     await sendResetLinkEmail(user.email, link);
 
     res.json({ mensaje: "Enlace de recuperación enviado al correo." });
