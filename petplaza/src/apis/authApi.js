@@ -2,8 +2,10 @@
 // ===============================
 // 🌍 BASE URL
 // ===============================
-const BASE_URL = "http://localhost:5000/api/auth";
-// const BASE_URL = "https://petplazahospivet.onrender.com/api/auth"; // 🔹 Producción
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "/api/auth"
+    : "http://localhost:5000/api/auth";
 
 /* ==========================================================
    🔐 LOGIN (acepta usuario / correo / teléfono)
