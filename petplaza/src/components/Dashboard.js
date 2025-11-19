@@ -6,6 +6,14 @@ import huellasDeGarras from "../assets/icons/huellas-de-garras.png";
 import veterinario from "../assets/icons/veterinario22.png";
 import advertencia from "../assets/icons/advertencia.png";
 
+/* ============================================================
+   🌐 BASE_URL DINÁMICA (Local / Render)
+============================================================ */
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "/api/dashboard" // Render: mismo dominio
+    : "http://localhost:5000/api/dashboard"; // Local
+
 const Dashboard = ({ user }) => {
   const [stats, setStats] = useState({
     owners: 0,
@@ -31,7 +39,9 @@ const Dashboard = ({ user }) => {
     const fetchDashboard = async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:5000/api/dashboard");
+
+        // ⬇️ Aquí usamos BASE_URL dinámico
+        const res = await fetch(BASE_URL);
         const data = await res.json();
 
         if (!res.ok || !data.success)
@@ -107,7 +117,7 @@ const Dashboard = ({ user }) => {
       </div>
     );
   }
-  
+
   return (
     <div className="dashboard-module">
       <div className="dashboard-header fade-in">
