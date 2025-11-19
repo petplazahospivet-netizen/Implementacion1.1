@@ -74,10 +74,9 @@ app.use("/api/reports", reportRoutes);
    🧱 SERVIR FRONTEND (para Render o Producción)
 ===================================================== */
 if (process.env.NODE_ENV === "production") {
-  const FE_DIR = path.join(__dirname, "../frontend/build");
+  const FE_DIR = path.join(__dirname, "../build");  // 👈 CORREGIDO
   app.use(express.static(FE_DIR));
 
-  // Fallback SPA (solo si no es una ruta API)
   app.get("/{*splat}", (req, res) => {
     if (req.path.startsWith("/api")) {
       return res.status(404).json({ mensaje: "Ruta API no encontrada" });
