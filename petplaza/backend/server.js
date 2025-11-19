@@ -78,7 +78,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(FE_DIR));
 
   // Fallback SPA (solo si no es una ruta API)
-  app.get("*", (req, res) => {
+  app.get("/{*splat}", (req, res) => {
     if (req.path.startsWith("/api")) {
       return res.status(404).json({ mensaje: "Ruta API no encontrada" });
     }
