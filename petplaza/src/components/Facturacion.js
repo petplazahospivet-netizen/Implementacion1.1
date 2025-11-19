@@ -36,10 +36,9 @@ const isLocal =
   (window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1");
 
-//  Usa tu dominio real del backend Render:
-const BACKEND_URL = isLocal
-  ? "http://localhost:5000/api"
-  : "https://petplaza-backend.onrender.com/api";
+// 👉 en local usa el backend en :5000
+// 👉 en producción usa el mismo dominio del front (ruta /api)
+const BACKEND_URL = isLocal ? "http://localhost:5000/api" : "/api";
 
 const Facturacion = ({ user }) => {
   const localUser = JSON.parse(localStorage.getItem("user"));
