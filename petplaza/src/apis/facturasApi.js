@@ -4,18 +4,10 @@ import axios from "axios";
 /* ==========================================================
     🌍 BASE URL dinámica según entorno (Local + Render)
 ========================================================== */
-
-//  Detectar si está en entorno local
-const isLocal =
-  typeof window !== "undefined" &&
-  (window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1");
-
-//  En local → usa puerto del backend
-//  En Render → usa el mismo dominio del frontend
-const BASE_URL = isLocal
-  ? "http://localhost:5000/api/facturas"
-  : "/api/facturas";
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "/api/facturas"                      // En Render (mismo dominio)
+    : "http://localhost:5000/api/facturas"; // En local
 
 /* ==========================================================
     CLIENTE AXIOS BASE
