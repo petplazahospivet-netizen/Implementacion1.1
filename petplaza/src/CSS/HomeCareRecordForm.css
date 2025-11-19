@@ -1,0 +1,568 @@
+/* =========================================================
+   EXPEDIENTE DE CUIDADOS EN CASA - FORMULARIO MODAL (COMPACTO OPTIMIZADO)
+   Basado en el estilo del expediente general (520px / padding / proporciones)
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   🔲 Fondo semitransparente detrás del modal principal
+--------------------------------------------------------- */
+.care-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 20, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* ---------------------------------------------------------
+   🧱 Contenedor principal del modal
+   — Compactado al tamaño del expediente general (520px)
+--------------------------------------------------------- */
+.care-modal {
+  width: 520px;
+  max-width: 92vw;
+  max-height: 84vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #fff;
+  border-radius: 16px; /* Igual que expediente general */
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+  font-family: "Inter", system-ui, sans-serif;
+  padding: 26px 28px 24px;
+  position: relative;
+  animation: scaleIn 0.3s ease forwards;
+  transform-origin: center;
+}
+
+/* Scroll vertical */
+.care-modal::-webkit-scrollbar {
+  width: 6px;
+}
+.care-modal::-webkit-scrollbar-thumb {
+  background: #007bff;
+  border-radius: 10px;
+}
+
+/* ---------------------------------------------------------
+   🧭 Cabecera del modal
+--------------------------------------------------------- */
+.care-modal .modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.care-modal .modal-header h2 {
+  color: #007bff;
+  margin: 0;
+  flex: 1;
+  font-weight: 800;
+  font-size: 1.35rem;
+}
+
+/* ---------------------------------------------------------
+   ❌ Botones de cerrar y limpiar
+--------------------------------------------------------- */
+.care-modal .close-btn,
+.care-modal .clear-btn {
+  border: 2px solid #007bff;
+  color: #007bff;
+  background: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.care-modal .close-btn:hover,
+.care-modal .clear-btn:hover {
+  background: #007bff18;
+  transform: scale(1.1);
+}
+
+/* Posición */
+.care-modal .close-btn {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+}
+.care-modal .clear-btn {
+  position: absolute;
+  right: 58px;
+  top: 16px;
+}
+
+/* ---------------------------------------------------------
+   📋 Formulario y campos
+--------------------------------------------------------- */
+.care-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.care-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.care-modal label span {
+  font-weight: 700;
+  color: #007bff;
+  font-size: 0.95rem;
+}
+
+/* ---------------------------------------------------------
+   ✏️ Campos de texto, select y área (ajustados al formato compacto)
+--------------------------------------------------------- */
+.care-modal input,
+.care-modal textarea {
+  width: 100%;
+  max-width: 485px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.96rem;
+  background: #fafafa;
+  transition: all 0.2s ease;
+  align-self: center;
+}
+
+/* Hover y focus */
+.care-modal input:hover,
+.care-modal textarea:hover {
+  background: #ffffff;
+  border-color: #007bff80;
+}
+.care-modal input:focus,
+.care-modal textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Área de texto adaptable */
+.care-modal textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* ---------------------------------------------------------
+   🎛️ Menús desplegables (select)
+   — Compactos, visualmente diferenciados
+--------------------------------------------------------- */
+.care-modal select {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.96rem;
+  background: #fafafa;
+  transition: all 0.2s ease;
+  align-self: center;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #007bff 50%),
+                    linear-gradient(135deg, #007bff 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(50% - 2px),
+                       calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.care-modal select:hover {
+  background: #ffffff;
+  border-color: #007bff80;
+}
+.care-modal select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* ---------------------------------------------------------
+   📏 Separación vertical adicional para campos específicos
+   — Ajustes finos para mejorar lectura y orden
+--------------------------------------------------------- */
+.care-modal label[for="ownerPhone"],
+.care-modal label:nth-of-type(2),
+.care-modal label[for="species"],
+.care-modal label:nth-of-type(4),
+.care-modal label[for="medicationDate"],
+.care-modal label[name="medicationDate"],
+.care-modal label[for="foodDate"],
+.care-modal label[name="foodDate"] {
+  margin-top: 10px;
+}
+
+/* ---------------------------------------------------------
+   🖼️ Sección de imágenes
+--------------------------------------------------------- */
+.care-modal .images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  justify-content: flex-start;
+}
+
+.care-modal .thumb {
+  position: relative;
+}
+
+.care-modal .thumb img {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.care-modal .thumb img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.care-modal .thumb .trash {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  border: none;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.care-modal .thumb .trash:hover {
+  background: #ef4444;
+  transform: scale(1.15);
+}
+
+/* ---------------------------------------------------------
+   🗑️ MODAL DE CONFIRMACIÓN DE ELIMINACIÓN (RESTAURADO)
+--------------------------------------------------------- */
+.delete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.3s ease;
+}
+
+.delete-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 360px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  animation: scaleIn 0.3s ease forwards;
+}
+
+.delete-modal h3 {
+  margin: 10px 0 6px;
+  color: #ef4444;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.delete-modal p {
+  margin: 0 0 16px;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* Botones de confirmación */
+.confirm-btns {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-yes,
+.btn-no {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-yes {
+  background: #ef4444;
+  color: #fff;
+}
+
+.btn-yes:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.4);
+}
+
+.btn-no {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn-no:hover {
+  background: #d1d5db;
+  transform: scale(1.05);
+}
+
+/* ---------------------------------------------------------
+   🔁 Botones de navegación entre formularios
+--------------------------------------------------------- */
+.care-modal .buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.care-modal .ghost {
+  background: #fff;
+  color: #007bff;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  height: 42px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.86rem;
+  transition: all 0.25s ease;
+}
+.care-modal .ghost:hover {
+  background: #007bff15;
+  transform: translateY(-2px);
+}
+
+/* ---------------------------------------------------------
+   🧩 Botones inferiores (Cancelar / Guardar)
+--------------------------------------------------------- */
+.care-modal .footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.care-modal .secondary,
+.care-modal .primary {
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+}
+
+/* Cancelar */
+.care-modal .secondary {
+  background: #da2525;
+  color: #fff;
+}
+.care-modal .secondary:hover {
+  background: #ff0000;
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(255, 0, 0, 0.3);
+}
+
+/* Guardar */
+.care-modal .primary {
+  background: #007bff;
+  color: #fff;
+}
+.care-modal .primary:hover {
+  background: #0068d8;
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0, 106, 232, 0.45);
+}
+
+/* ---------------------------------------------------------
+   ⚠️ Validaciones visuales (errores)
+--------------------------------------------------------- */
+.care-modal label.error input,
+.care-modal label.error select,
+.care-modal label.error textarea {
+  border: 2px solid #ff4444;
+  animation: shake 0.2s ease-in-out 2;
+  background: #ffecec;
+}
+.care-modal label.error small {
+  color: #ff4444;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-top: -4px;
+  margin-left: 2px;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ---------------------------------------------------------
+   🖼️ Visor de imágenes ampliadas
+--------------------------------------------------------- */
+.img-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.img-overlay img {
+  max-width: 95vw;
+  max-height: 90vh;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+}
+.img-overlay img:hover {
+  transform: scale(1.02);
+}
+
+.img-close {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.25s ease;
+  z-index: 10000;
+}
+.img-close:hover {
+  background: #e5e7eb;
+  transform: scale(1.1);
+}
+
+/* ---------------------------------------------------------
+   🔔 Notificaciones animadas (suaves y centradas)
+--------------------------------------------------------- */
+.notif {
+  position: fixed;
+  bottom: 24px;
+  right: 28px;
+  background: #007bff;
+  color: #fff;
+  padding: 12px 26px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  z-index: 120;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  animation: slideRight 0.4s ease forwards;
+  max-width: 340px;
+  text-align: left;
+  white-space: normal;
+  line-height: 1.3;
+}
+.notif.delete {
+  background: #ff4444;
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translate(20px, 20px); }
+  to { opacity: 1; transform: translate(0, 0); }
+}
+
+/* ---------------------------------------------------------
+   ✨ Animaciones globales de entrada/salida
+--------------------------------------------------------- */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes scaleOut { from { transform: scale(1); opacity: 1; } to { transform: scale(0.9); opacity: 0; } }
+
+.care-overlay.closing { animation: fadeOut 0.25s ease forwards; }
+.care-modal.closing { animation: scaleOut 0.25s ease forwards; }
+.img-overlay.closing { animation: fadeOut 0.25s ease forwards; }
+
+/* ---------------------------------------------------------
+   📱 Responsividad
+--------------------------------------------------------- */
+@media (max-width: 768px) {
+  .care-modal {
+    width: 90%;
+    padding: 22px 20px 20px;
+    max-height: 88vh;
+  }
+  .care-modal .modal-header h2 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  .care-modal .buttons-grid {
+    grid-template-columns: 1fr;
+  }
+  .care-modal .footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .care-modal .primary,
+  .care-modal .secondary {
+    width: 100%;
+    text-align: center;
+  }
+}
+@media (max-width: 480px) {
+  .care-modal {
+    width: 94%;
+    padding: 18px 16px;
+    border-radius: 12px;
+  }
+  .care-modal .modal-header h2 {
+    font-size: 1.1rem;
+  }
+  .care-modal input,
+  .care-modal textarea,
+  .care-modal select {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+  .care-modal .ghost {
+    height: 40px;
+    font-size: 0.8rem;
+  }
+  .care-modal .footer { gap: 8px; }
+}

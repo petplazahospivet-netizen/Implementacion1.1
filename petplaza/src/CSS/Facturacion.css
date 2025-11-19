@@ -1,0 +1,1468 @@
+
+/* ---------- VARIABLES ---------- */
+:root {
+  --facturacion-color-primary: #065f46;
+  --facturacion-color-primary-hover: #047857;
+  --facturacion-color-success: #059669;
+  --facturacion-color-bg: #f9fafb;
+  --facturacion-color-text-dark: #111827;
+  --facturacion-color-text-medium: #374151;
+  --facturacion-color-border: #e5e7eb;
+  --facturacion-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --facturacion-shadow-md: 0 4px 10px rgba(0, 0, 0, 0.05);
+  --facturacion-border-radius-sm: 6px;
+  --facturacion-border-radius-md: 10px;
+}
+
+/* ==========================================================
+    CONTENEDOR GENERAL
+   ========================================================== */
+.facturacion-container {
+  padding: 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--facturacion-color-text-dark);
+  background: var(--facturacion-color-bg);
+}
+/* ==========================================================
+   ENCABEZADO PRINCIPAL DEL MÓDULO DE FACTURACIÓN
+   ========================================================== */
+
+.facturacion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.facturacion-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.facturacion-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0;
+}
+
+.facturacion-subtitle {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+}
+
+/* ==========================================================
+    RESPONSIVE - ENCABEZADO
+   ========================================================== */
+@media (max-width: 768px) {
+  .facturacion-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .facturacion-title {
+    font-size: 1.3rem;
+  }
+
+  .facturacion-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .facturacion-options-btn {
+    align-self: flex-end;
+  }
+}
+/* ==========================================================
+    MENÚ DE 3 PUNTOS - OPCIONES LOTE CAI
+   ========================================================== */
+
+.facturacion-header-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+/* Botón del menú (3 puntos) */
+.facturacion-menu-btn {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.35rem 0.45rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #374151;
+  transition: all 0.25s ease;
+}
+
+.facturacion-menu-btn:hover {
+  background-color: #e5e7eb;
+  color: #065f46;
+  transform: scale(1.05);
+}
+
+/* Dropdown de opciones */
+.facturacion-menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 2.4rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 0.4rem;
+  z-index: 15;
+  min-width: 180px;
+  animation: dropdownFade 0.2s ease-out;
+}
+
+.facturacion-menu-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  border: none;
+  background: transparent;
+  color: #374151;
+  font-size: 0.85rem;
+  text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.facturacion-menu-dropdown button:hover {
+  background-color: #ecfdf5;
+  color: #065f46;
+  font-weight: 600;
+}
+
+/* Animación de apertura suave */
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE - MENÚ DE OPCIONES
+   ========================================================== */
+@media (max-width: 768px) {
+  .facturacion-header-actions {
+    align-self: flex-end;
+    margin-top: 0.4rem;
+  }
+
+  .facturacion-menu-dropdown {
+    right: 0;
+    top: 2.6rem;
+    min-width: 160px;
+  }
+
+  .facturacion-menu-dropdown button {
+    font-size: 0.8rem;
+    padding: 0.45rem 0.7rem;
+  }
+}
+/* ==========================================================
+    TARJETAS DE ESTADÍSTICAS - VERSIÓN CORREGIDA
+   ========================================================== */
+.facturacion-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  flex: 1 1 140px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.stat-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.stat-card p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.stat-card.blue svg {
+  color: #2563eb;
+}
+.stat-card.green svg {
+  color: #16a34a;
+}
+.stat-card.orange svg {
+  color: #ea580c;
+}
+.stat-card.teal svg {
+  color: #0d9488;
+}
+
+/* ==========================================================
+   BUSCADOR Y BOTÓN NUEVA FACTURA - RESTAURADO
+   ========================================================== */
+.facturacion-search {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.6rem;
+}
+
+.facturacion-search input {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  outline: none;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.facturacion-search input:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+}
+
+.facturacion-btn-primary {
+  background-color: #059669;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.25s;
+  font-weight: 600;
+}
+
+.facturacion-btn-primary:hover {
+  background-color: #047857;
+  transform: scale(1.03);
+}
+
+/* Adaptación Responsive */
+@media (max-width: 768px) {
+  .facturacion-search {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .facturacion-btn-primary {
+    width: 100%;
+    text-align: center;
+  }
+}
+/* ==========================================================
+   TABLA PRINCIPAL - VERSIÓN RESTAURADA Y OPTIMIZADA
+   ========================================================== */
+
+.facturacion-table-container {
+  overflow-x: auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Estructura general --- */
+.facturacion-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.facturacion-table th,
+.facturacion-table td {
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+}
+
+.facturacion-table th {
+  background-color: #ecfdf5;
+  color: #111827;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.facturacion-table tr:nth-child(even) td {
+  background-color: #fafafa;
+}
+
+.facturacion-table tr:hover td {
+  background-color: #f0fdf4;
+  transition: 0.25s;
+}
+
+/* ==========================================================
+   ESTADO: PAGADO / PENDIENTE
+   ========================================================== */
+.facturacion-status-btn {
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.facturacion-status-btn.pagado {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.facturacion-status-btn.pendiente {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.facturacion-status-btn:hover {
+  transform: scale(1.05);
+  filter: brightness(1.05);
+}
+
+/* ==========================================================
+    BOTONES DE ACCIÓN
+   ========================================================== */
+.facturacion-action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.facturacion-action-btn {
+  border: none;
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 6px;
+  padding: 0.3rem 0.45rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*  Ver */
+.facturacion-action-btn.view:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  transform: translateY(-2px);
+}
+
+/*  Editar */
+.facturacion-action-btn.edit:hover {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  transform: translateY(-2px);
+}
+
+/*  cancelado */
+.facturacion-action-btn.cancel:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+  transform: translateY(-2px);
+}
+
+
+/* ==========================================================
+   MODALES Y BOTÓN DE CIERRE (CONSISTENTES)
+   ========================================================== */
+.facturacion-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  animation: fadeIn 0.25s ease;
+}
+
+.facturacion-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  padding: 1rem 1.2rem;
+  overflow-y: auto;
+  position: relative;
+  transition: all 0.25s ease;
+  width: 92%;
+  max-width: 640px;
+  max-height: 85vh;
+}
+
+.facturacion-modal-preview {
+  max-width: 720px;
+  max-height: 90vh;
+}
+
+/* Botón de cierre (X) */
+.facturacion-close-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #065f46;
+  font-size: 1.1rem;
+  border-radius: 50%;
+  transition: 0.25s;
+}
+
+.facturacion-close-btn:hover {
+  background-color: #ecfdf5;
+  transform: rotate(90deg);
+}
+
+/* ==========================================================
+   ANIMACIÓN SUAVE
+   ========================================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* ==========================================================
+   VISTA PREVIA DE FACTURA
+   ========================================================== */
+.facturacion-factura-container {
+  background: #fff;
+  padding: 1rem 1.2rem;
+  border-radius: var(--facturacion-border-radius-md);
+  box-shadow: var(--facturacion-shadow-md);
+  border: 1px solid var(--facturacion-color-border);
+  width: 95%;
+  max-width: 720px;
+  margin: auto;
+  position: relative;
+}
+
+.facturacion-factura-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr auto;
+  gap: 0.8rem;
+  align-items: start;
+  border-bottom: 2px solid var(--facturacion-color-primary);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.facturacion-factura-header img {
+  height: 50px;
+}
+
+.facturacion-btn-imprimir {
+  background: var(--facturacion-color-primary);
+  color: white;
+  padding: 0.45rem 0.8rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  transition: 0.2s;
+}
+
+.facturacion-btn-imprimir:hover {
+  background: var(--facturacion-color-primary-hover);
+  transform: scale(1.05);
+}
+
+.facturacion-factura-cliente {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 0.8rem;
+  background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+  border-radius: var(--facturacion-border-radius-sm);
+  border: 1px solid var(--facturacion-color-border);
+  margin-bottom: 0.8rem;
+  font-size: 0.75rem;
+}
+
+.facturacion-factura-totales {
+  margin-top: 0.8rem;
+  background: #f9fafb;
+  padding: 0.8rem;
+  border: 1px solid var(--facturacion-color-border);
+  border-radius: var(--facturacion-border-radius-sm);
+  max-width: 380px;
+  margin-left: auto;
+}
+
+.facturacion-factura-footer {
+  text-align: center;
+  font-style: italic;
+  color: var(--facturacion-color-primary);
+  font-size: 0.75rem;
+  margin-top: 0.8rem;
+  border-top: 1px solid var(--facturacion-color-border);
+  padding-top: 0.6rem;
+}/* ==========================================================
+   TABLA DE DETALLES - VISTA PREVIA DE FACTURA
+   ========================================================== */
+
+.facturacion-detalles-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.facturacion-detalles-table thead {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.facturacion-detalles-table th {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  font-weight: 600;
+  border-bottom: 2px solid #d1fae5;
+}
+
+.facturacion-detalles-table td {
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #111827;
+}
+
+.facturacion-detalles-table tr:nth-child(even) td {
+  background-color: #f9fafb;
+}
+
+/* Ajuste para vista limpia y proporcional */
+.facturacion-detalles-table th:nth-child(1),
+.facturacion-detalles-table td:nth-child(1) {
+  width: 45%;
+}
+.facturacion-detalles-table th:nth-child(2),
+.facturacion-detalles-table td:nth-child(2) {
+  width: 15%;
+  text-align: center;
+}
+.facturacion-detalles-table th:nth-child(3),
+.facturacion-detalles-table td:nth-child(3),
+.facturacion-detalles-table th:nth-child(4),
+.facturacion-detalles-table td:nth-child(4) {
+  width: 20%;
+  text-align: right;
+}
+
+/* ==========================================================
+   RESPONSIVE - TABLA DE VISTA PREVIA
+   ========================================================== */
+@media (max-width: 768px) {
+  .facturacion-detalles-table thead {
+    display: none;
+  }
+
+  .facturacion-detalles-table,
+  .facturacion-detalles-table tbody,
+  .facturacion-detalles-table tr,
+  .facturacion-detalles-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .facturacion-detalles-table tr {
+    background: #ffffff;
+    margin-bottom: 0.8rem;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 0.6rem;
+  }
+
+  .facturacion-detalles-table td {
+    border: none;
+    padding: 0.4rem 0;
+    text-align: left;
+  }
+
+  .facturacion-detalles-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #065f46;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+}
+/* ==========================================================
+   NUEVA FACTURA
+   ========================================================== */
+.facturacion-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+.facturacion-modal {
+  background: #fff;
+  border-radius: var(--facturacion-border-radius-md);
+  box-shadow: var(--facturacion-shadow-md);
+  padding: 1rem 1.2rem;
+  width: 95%;
+  max-width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.facturacion-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.facturacion-close-btn {
+  border: none;
+  background: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.facturacion-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.facturacion-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.6rem;
+}
+
+.facturacion-form-group label {
+  font-weight: 600;
+  color: var(--facturacion-color-text-medium);
+  margin-bottom: 0.2rem;
+}
+
+.facturacion-form-group input,
+.facturacion-form-group select {
+  padding: 0.45rem;
+  border: 1px solid var(--facturacion-color-border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.facturacion-form-group input:focus,
+.facturacion-form-group select:focus {
+  border-color: var(--facturacion-color-primary);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25);
+}
+/* ==========================================================
+   SERVICIOS Y PRODUCTOS (COMPATIBLE + MEJORADO)
+   ========================================================== */
+
+.facturacion-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+/* Tarjeta individual */
+.facturacion-item-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.25s ease;
+}
+
+.facturacion-item-card:hover {
+  background: #f0fdf4;
+  border-color: #a7f3d0;
+  transform: scale(1.01);
+}
+
+/* Información del producto/servicio */
+.facturacion-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.facturacion-item-info h4 {
+  font-size: 0.9rem;
+  color: #111827;
+  margin: 0;
+  font-weight: 600;
+}
+
+.facturacion-item-info p {
+  font-size: 0.85rem;
+  color: #065f46;
+  margin: 0;
+}
+
+/* Controles (+, -, eliminar) */
+.facturacion-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Control de cantidad */
+.facturacion-quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #ecfdf5;
+  border-radius: 6px;
+  padding: 0.25rem 0.3rem;
+}
+
+.facturacion-quantity-control button {
+  background: #10b981;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  width: 1.6rem;
+  height: 1.6rem;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.facturacion-quantity-control button:hover {
+  background: #059669;
+  transform: scale(1.05);
+}
+
+/* Botón eliminar */
+.facturacion-remove-item-btn {
+  background: none;
+  border: 1px solid #dc2626;
+  color: #dc2626;
+  border-radius: 6px;
+  width: 1.8rem;
+  height: 1.8rem;
+  cursor: pointer;
+  transition: 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.facturacion-remove-item-btn:hover {
+  background-color: #fee2e2;
+  transform: scale(1.05);
+}
+
+/* Cantidad y precio */
+.facturacion-item-subtotal {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #047857;
+  text-align: right;
+  min-width: 80px;
+}
+
+/* =========================
+    RESPONSIVE DESIGN
+   ========================= */
+@media (max-width: 768px) {
+  .facturacion-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .facturacion-item-controls {
+    align-self: flex-end;
+  }
+}
+/* ==========================================================
+   BLOQUES DE TOTALES Y DATOS LEGALES (COMPATIBLE)
+   ========================================================== */
+
+.facturacion-form-totals,
+.facturacion-factura-totales {
+  background: #f1fdf6;
+  border: 1px solid #d1fae5;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-top: 0.8rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* Etiquetas de totales */
+.facturacion-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #111827;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.facturacion-total-row strong {
+  color: #047857;
+  font-weight: 600;
+}
+
+/* Línea de separación */
+.facturacion-form-totals hr,
+.facturacion-factura-totales hr {
+  border: none;
+  border-top: 1px solid #d1fae5;
+  margin: 0.4rem 0;
+}
+
+/* Total final */
+.facturacion-grand-total {
+  background-color: #d1fae5;
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-weight: 700;
+  color: #065f46;
+  font-size: 1rem;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ==========================================================
+    DATOS LEGALES (CAI / RANGO / FECHAS)
+   ========================================================== */
+.facturacion-legal-info {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  color: #374151;
+}
+
+.facturacion-legal-info strong {
+  color: #047857;
+}
+
+.facturacion-legal-info p {
+  margin: 0.2rem 0;
+}
+
+/* ==========================================================
+    BOTONES DE ACCIÓN EN TOTALES
+   ========================================================== */
+.facturacion-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+/* ===============
+.facturacion-btn-danger {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+} ========================================================== */
+
+.facturacion-btn-danger:hover {
+  background-color: #b91c1c;
+  transform: scale(1.05);
+}
+
+.facturacion-btn-primary {
+  background-color: #059669;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.facturacion-btn-primary:hover {
+  background-color: #047857;
+  transform: scale(1.05);
+}
+
+/* ==========================================================
+   RESPONSIVE - VISTA DE FACTURA
+   ========================================================== */
+@media (max-width: 768px) {
+  .facturacion-form-totals,
+  .facturacion-factura-totales {
+    font-size: 0.85rem;
+    padding: 0.8rem;
+  }
+
+  .facturacion-grand-total {
+    font-size: 0.95rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  .facturacion-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .facturacion-btn-primary,
+  .facturacion-btn-danger {
+    width: 100%;
+  }
+}
+/* Contenedor de los botones */
+.facturacion-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+/* Botón Cancelar */
+.facturacion-btn-cancel {
+  background-color: #f9fafb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.facturacion-btn-cancel:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+  border-color: #9ca3af;
+  transform: scale(1.03);
+}
+
+/* Botón Eliminar */
+.facturacion-btn-danger {
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.facturacion-btn-danger:hover {
+  background-color: #b91c1c;
+  transform: scale(1.05);
+}
+/* ==========================================================
+    BOTÓN SECUNDARIO (CANCELAR)
+   ========================================================== */
+.facturacion-btn-secondary {
+  background-color: #f9fafb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.facturacion-btn-secondary:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+  border-color: #9ca3af;
+  transform: scale(1.03);
+}
+
+/* Alineación coherente de botones */
+.facturacion-confirm-actions,
+.facturacion-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+/* ==========================================================
+   LOTE CAI
+   ========================================================== */
+.facturacion-fiscal-box {
+  margin: 0.75rem 0 1rem 0;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--facturacion-color-success);
+  border-radius: var(--facturacion-border-radius-sm);
+  background: rgba(5, 150, 105, 0.06);
+  color: #0b3b2f;
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.estado-lote {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.estado-lote.activo {
+  background: #e8fff5;
+  color: #065f46;
+  border: 1px solid #b4f0d2;
+}
+
+.estado-lote.inactivo {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.estado-lote.vencido {
+  background: #fff2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* ==========================================================
+   ACCIONES Y HOVERS
+   ========================================================== */
+.facturacion-action-btn.edit {
+  background: #fff7e6;
+  border-color: #f59e0b33;
+}
+
+.facturacion-action-btn.edit:hover {
+  background: #fbbf24;
+  border-color: #f59e0b;
+  color: #111827;
+}
+
+/* ==========================================================
+   RESPONSIVE GLOBAL
+   ========================================================== */
+@media (max-width: 992px) {
+  .facturacion-factura-container,
+  .facturacion-modal {
+    max-width: 90%;
+  }
+  .facturacion-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .facturacion-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .facturacion-factura-cliente {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .facturacion-factura-totales {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .facturacion-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .facturacion-table thead {
+    display: none;
+  }
+  .facturacion-table tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.8rem;
+    background: #fff;
+    border: 1px solid var(--facturacion-color-border);
+    border-radius: var(--facturacion-border-radius-md);
+    box-shadow: var(--facturacion-shadow-sm);
+  }
+  .facturacion-table td {
+    padding: 0.5rem 0.8rem;
+  }
+  .facturacion-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--facturacion-color-text-medium);
+    display: block;
+  }
+}
+/* ==========================================================
+    RESPONSIVE - MODAL DE VISTA PREVIA
+   ========================================================== */
+
+@media (max-width: 1024px) {
+  .facturacion-modal-preview {
+    max-width: 90%;
+    height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 0.8rem;
+  }
+
+  .facturacion-factura-container {
+    padding: 0.8rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .facturacion-factura-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .facturacion-factura-header div {
+    text-align: center;
+  }
+
+  .facturacion-btn-secondary {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .facturacion-form-row {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .facturacion-card {
+    width: 100%;
+  }
+
+  .facturacion-factura-totales {
+    margin: 1rem 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .facturacion-modal-preview {
+    max-width: 95%;
+    padding: 0.6rem;
+  }
+
+  .facturacion-factura-header h2 {
+    font-size: 1rem;
+  }
+
+  .facturacion-factura-header div {
+    font-size: 0.85rem;
+  }
+
+  .facturacion-form-row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .facturacion-card {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+
+  .facturacion-detalles-table {
+    font-size: 0.8rem;
+  }
+
+  .facturacion-detalles-table thead {
+    display: none;
+  }
+
+  .facturacion-detalles-table,
+  .facturacion-detalles-table tbody,
+  .facturacion-detalles-table tr,
+  .facturacion-detalles-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .facturacion-detalles-table tr {
+    margin-bottom: 0.8rem;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 0.6rem;
+  }
+
+  .facturacion-detalles-table td {
+    display: flex;
+    justify-content: space-between;
+    border: none;
+    padding: 0.3rem 0;
+  }
+
+  .facturacion-detalles-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #065f46;
+  }
+
+  .facturacion-factura-totales {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+  }
+
+  .facturacion-factura-footer {
+    font-size: 0.7rem;
+    text-align: center;
+    padding-top: 0.5rem;
+  }
+}
+
+/* ============= NOTIFICACIONES FLOTANTES (TOAST)  =============== */
+
+.facturacion-notification-success,
+.facturacion-notification-error,
+.facturacion-notification-warning {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  z-index: 9999;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+/* Mostrar */
+.facturacion-notification-success.show,
+.facturacion-notification-error.show,
+.facturacion-notification-warning.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Éxito (verde) */
+.facturacion-notification-success {
+  background: linear-gradient(135deg, #16a34a, #059669);
+  border-left: 5px solid #065f46;
+}
+
+/* Error (rojo) */
+.facturacion-notification-error {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border-left: 5px solid #7f1d1d;
+}
+
+/* Advertencia (amarillo) */
+.facturacion-notification-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-left: 5px solid #92400e;
+}
+
+/* Animación de entrada */
+@keyframes toastFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Adaptación para móvil */
+@media (max-width: 768px) {
+  .facturacion-notification-success,
+  .facturacion-notification-error,
+  .facturacion-notification-warning {
+    top: auto;
+    bottom: 1.2rem;
+    right: 0.8rem;
+    left: 0.8rem;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+}
+/* ==========================================================
+   BOTÓN DE CANCELAR FACTURA (❌)
+   ========================================================== */
+.facturacion-action-btn.cancel {
+  background: #f3f4f6;
+  color: #b91c1c;
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+}
+
+.facturacion-action-btn.cancel:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+  transform: translateY(-2px);
+  border-color: #fecaca;
+}
+
+/* ==========================================================
+   MODAL DE CONFIRMACIÓN DE CANCELACIÓN
+   ========================================================== */
+.facturacion-confirm-modal h2 {
+  color: var(--facturacion-color-text-dark);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.facturacion-confirm-content p {
+  color: var(--facturacion-color-text-medium);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.facturacion-confirm-content span {
+  display: block;
+  margin-top: 0.4rem;
+  color: #b91c1c;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.facturacion-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+/* Botones dentro del modal */
+.facturacion-btn-secondary {
+  background-color: #f9fafb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.facturacion-btn-secondary:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+  border-color: #9ca3af;
+  transform: scale(1.03);
+}
+
+.facturacion-btn-danger {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.facturacion-btn-danger:hover {
+  background-color: #b91c1c;
+  transform: scale(1.05);
+}
+.facturacion-notification-success.show {
+  animation: toastFadeIn 0.3s ease;
+}
+.facturacion-menu-dropdown {
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.facturacion-no-permissions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  font-size: 1.2rem;
+  font-family: "Inter", sans-serif;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  margin: 2rem;
+  text-align: center;
+}

@@ -1,0 +1,720 @@
+/* ====== SCOPE EXCLUSIVO PARA Reports.js (Adaptado y Corregido) ====== */
+.reports-container {
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: #f5f5f7;
+  min-height: 100vh;
+  border-radius: 12px;
+}
+
+/* Header */
+.reports-container .reports-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  /* Permite que el header se envuelva si es necesario */
+  flex-wrap: wrap; 
+}
+.reports-container .reports-header h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #222;
+}
+.reports-container .reports-date-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Para que el selector de fecha no ocupe todo el ancho en desktop */
+  flex-shrink: 0; 
+}
+.reports-container .reports-date-picker input {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  /* Ajuste de tamaño para móviles */
+  max-width: 150px; 
+}
+.reports-container .reports-date-picker input:hover,
+.reports-container .reports-date-picker input:focus {
+  border: 1px solid #16a34a;
+  box-shadow: 0 0 4px rgba(22, 163, 74, 0.4);
+}
+
+/* --- Tarjetas estadísticas --- */
+.reports-container .reports-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 25px;
+}
+.reports-container .reports-stats-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 16px 22px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+.reports-container .reports-stats-card:hover {
+  background: #f8fafc;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+}
+.reports-container .reports-stats-card.active {
+  border: 2px solid #16a34a;
+  background: #ecfdf5;
+  transform: scale(1.02);
+}
+.reports-container .reports-stats-card h3 {
+  font-size: 1.25rem; 
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+.reports-container .reports-stats-card p {
+  font-size: 0.9rem; 
+  color: #555;
+  margin: 2px 0 0;
+}
+
+/* --- Íconos dentro de círculos --- */
+.reports-container .reports-stats-card .icon-wrapper {
+  width: 52px; 
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  background: #f9fafb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+.reports-container .reports-stats-card .icon-wrapper img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: none !important;
+}
+
+/* Colores de fondo de los círculos */
+.reports-container .reports-stats-card.ventas .icon-wrapper {
+  background: #16a34a1a;
+  border: 2px solid #16a34a;
+}
+.reports-container .reports-stats-card.facturas .icon-wrapper {
+  background: #2563eb1a;
+  border: 2px solid #2563eb;
+}
+.reports-container .reports-stats-card.promedio .icon-wrapper {
+  background: #9333ea1a;
+  border: 2px solid #9333ea;
+}
+.reports-container .reports-stats-card.agotados .icon-wrapper {
+  background: #f973161a;
+  border: 2px solid #f97316;
+}
+
+/* Panel inferior */
+.reports-container .reports-grid {
+  display: grid; 
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+}
+.reports-container .reports-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+.reports-container .reports-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+.reports-container .reports-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  /* Permite que el header de la tarjeta envuelva en móvil */
+  flex-wrap: wrap; 
+  gap: 10px;
+}
+.reports-container .reports-card-header h2 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #111827;
+  /* Asegura que el título no sea aplastado */
+  flex-shrink: 0; 
+}
+
+/* --- Botones de exportación --- */
+.reports-container .export-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Clave para la adaptabilidad de los botones: permitir el ajuste */
+  flex-wrap: wrap; 
+  white-space: normal;
+  overflow: visible;
+}
+.reports-container .btn-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  margin-right: 6px;
+  filter: none !important;
+}
+
+/* Botones */
+.reports-container .btn-modern {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* Flex-shrink evita que los botones se achiquen demasiado */
+  flex-shrink: 0; 
+}
+.reports-container .btn-modern.excel {
+  background: linear-gradient(135deg, #34a853, #0c8c37);
+  color: #fff;
+}
+.reports-container .btn-modern.pdf {
+  background: linear-gradient(135deg, #d32f2f, #9a0007);
+  color: #fff;
+}
+.reports-container .btn-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Citas compactas */
+.reports-container .export-buttons--citas .btn-modern {
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.85rem; 
+  width: auto;
+}
+
+/* Ventas diarias */
+.reports-container .reports-sales-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.reports-container .reports-sales-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+/* === Barras dinámicas para Ventas Diarias (modernas y proporcionales) === */
+.reports-container .reports-bar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: #f1f5f9; /* gris claro base */
+  border-radius: 6px;
+  height: 12px;
+  overflow: hidden;
+}
+.reports-container .reports-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+  border-radius: 6px;
+  transition: width 0.6s ease-in-out;
+}
+.reports-container .reports-value {
+  font-weight: 600;
+  color: #111827;
+  min-width: 85px;
+  text-align: right;
+  font-size: 0.9rem;
+}
+.reports-container .reports-sales-date {
+  width: 90px;
+  color: #374151;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* Inventario */
+.reports-container .reports-inventory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.reports-container .reports-inventory-item {
+  display: flex;
+  justify-content: space-between;
+  /* Permite que el contenido se envuelva si es necesario */
+  flex-wrap: wrap; 
+  font-size: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 6px;
+  /* Agregado para que haya espacio entre el texto en móvil */
+  gap: 5px; 
+}
+.reports-container .reports-inventory-item strong {
+  color: #222;
+}
+
+/* Stock Bajo */
+.reports-container .reports-low-stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.reports-container .reports-low-stock-item {
+  display: flex;
+  justify-content: space-between;
+  /* Permite el ajuste */
+  flex-wrap: wrap; 
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f1f1;
+  gap: 5px;
+}
+
+/* Sin permisos */
+.reports-container .reports-no-permissions {
+  padding: 20px;
+  text-align: center;
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* ===== MODAL CORREGIDO ===== */
+
+.reports-container .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: reportsFadeIn 0.4s ease forwards;
+}
+.reports-container .modal-content {
+  background: #fff;
+  border-radius: 12px;
+  /* Ajuste clave: padding-top para dejar espacio a la 'x' */
+  padding: 20px;
+  padding-top: 35px; 
+  width: 95%; 
+  max-width: 650px; 
+  min-height: 220px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.reports-container .modal-close {
+  position: absolute;
+  /* Ajuste de posición */
+  top: 8px; 
+  right: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  /* Ajuste clave: z-index para que la 'x' esté siempre sobre el contenido desplazable */
+  z-index: 10; 
+  font-size: 1.5rem; 
+  padding: 5px;
+  color: #333;
+  line-height: 1;
+}
+
+/* Animaciones (se mantienen) */
+.reports-container .modal-overlay.closing {
+  animation: reportsFadeOut 0.4s ease forwards;
+}
+.reports-container .smooth-modal {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.reports-container .modal-overlay:not(.closing) .smooth-modal {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reports-container .modal-overlay.closing .smooth-modal {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+@keyframes reportsFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes reportsFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* ===== Estilos Adaptativos (Media Query) ===== */
+
+/* ==========================================================
+   📱 MEJORA VISUAL DE RESPONSIVIDAD GENERAL
+   (fondo gris + tarjetas + encabezados)
+========================================================== */
+@media (max-width: 768px) {
+  /* Fondo gris: más respiración lateral */
+  .reports-container {
+    padding: 18px 22px; /* más aire lateral */
+    border-radius: 0; /* elimina bordes en pantallas pequeñas */
+  }
+
+  /* Tarjetas blancas: mejor espaciado y proporción */
+  .reports-container .reports-card {
+    padding: 18px 16px;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Encabezados dentro de cada tarjeta */
+  .reports-container .reports-card-header h2 {
+    font-size: 1.01rem;
+    margin-bottom: 4px;
+    color: #0f172a;
+  }
+
+  /* Mejora visual de los encabezados principales */
+  .reports-container .reports-header h1 {
+    font-size: 1.55rem;
+    margin-bottom: 5px;
+    color: #111827;
+  }
+
+  /* Tarjetas superiores (estadísticas): más equilibrio vertical */
+  .reports-container .reports-stats-card {
+    padding: 16px 18px;
+    border-radius: 14px;
+  }
+
+  /* Espaciado adicional entre secciones */
+  .reports-container .reports-grid {
+    gap: 24px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .reports-container {
+    padding: 15px; 
+  }
+  .reports-container .reports-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px; 
+    margin-bottom: 20px;
+  }
+  .reports-container .reports-header h1 {
+    font-size: 1.6rem;
+  }
+  .reports-container .reports-date-picker {
+    width: 100%;
+    justify-content: space-between; 
+  }
+  .reports-container .reports-date-picker input {
+    flex-grow: 1; 
+    max-width: none;
+  }
+  .reports-container .reports-grid {
+    grid-template-columns: 1fr; 
+    gap: 20px;
+  }
+
+  /* Asegura el buen espaciado en tarjetas estadísticas */
+  .reports-container .reports-stats-card {
+    padding: 14px 18px;
+  }
+  .reports-container .reports-stats-card h3 {
+    font-size: 1.2rem;
+  }
+  .reports-container .reports-stats-card p {
+    font-size: 0.85rem;
+  }
+  .reports-container .reports-stats-card .icon-wrapper {
+    width: 48px;
+    height: 48px;
+  }
+  .reports-container .reports-stats-card .icon-wrapper img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ===== Estilos de Citas y Listas ===== */
+
+.reports-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.85rem; 
+  color: #fff;
+  text-transform: capitalize;
+  min-width: 90px; 
+  text-align: center;
+  margin: 2px 0; 
+}
+
+/* Colores por estado */
+.reports-tag.programada {
+  background-color: #3498db; /* Azul */
+}
+
+.reports-tag.completada {
+  background-color: #2ecc71; /* Verde */
+}
+
+.reports-tag.cancelada {
+  background-color: #e74c3c; /* Rojo */
+}
+
+/* Ajustes del contenedor en modal de citas */
+.reports-inventory-list {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reports-container .reports-inventory-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: 0.3s ease;
+  flex-wrap: wrap; /* Esencial para adaptabilidad */
+  gap: 5px;
+}
+
+.reports-inventory-item:hover {
+  background-color: #f0f8ff;
+  transform: scale(1.01);
+}
+
+/* === Realce para totales de inventario === */
+.reports-total-row {
+  border-top: 2px solid #e5e7eb;
+  margin-top: 6px;
+  padding-top: 10px;
+}
+
+.reports-total-label {
+  font-weight: 700;
+  color: #065f46;
+}
+
+.reports-total-amount {
+  font-weight: 800;
+  color: #065f46;
+}
+
+/* Opcional: estilo típico de valores en moneda */
+.reports-value,
+.reports-inventory-item strong {
+  letter-spacing: 0.2px;
+}
+
+/* ==========================================================
+   🎨 BOTÓN "GENERAR REPORTE" — DISEÑO EXCLUSIVO Reports.js
+========================================================== */
+.reports-container .btn-modern.generate {
+  background: linear-gradient(135deg, #0285c2, #007fb1);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 3px 10px rgba(2, 204, 204, 0.25);
+}
+
+.reports-container .btn-modern.generate:hover {
+  background: linear-gradient(135deg, #00b3b3, #009999);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 162, 162, 0.35);
+}
+
+.reports-container .btn-modern.generate:active {
+  transform: scale(0.98);
+}
+
+.reports-container .btn-modern.generate:disabled {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  cursor: not-allowed;
+  opacity: 0.8;
+  box-shadow: none;
+}
+
+/* Ícono giratorio cuando está cargando */
+.reports-container .btn-modern.generate .spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 🌐 Adaptabilidad para pantallas pequeñas */
+@media (max-width: 768px) {
+  .reports-container .btn-modern.generate {
+    width: 100%;
+    font-size: 1rem;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 14px;
+  }
+}
+
+/* ==========================================================
+   📱 REUBICAR SOLO EL BOTÓN EN MÓVILES (sin mover nada más)
+========================================================== */
+@media (max-width: 768px) {
+  /* Reubicar únicamente el botón sobre los filtros */
+  .reports-container .reports-date-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .reports-container .btn-modern.generate {
+    order: -1; /* ✅ coloca el botón arriba */
+    width: 100%;
+    margin-bottom: 6px;
+    text-align: center;
+    border-radius: 12px;
+    padding: 10px;
+  }
+}
+
+
+
+/* ==========================================================
+   TOAST DE NOTIFICACIÓN — ENTRADA Y SALIDA SUAVES SIN TITILEO
+========================================================== */
+.reports-toast {
+  position: fixed;
+  top: 85px;
+  right: 30px;
+  min-width: 260px;
+  background-color: #2563eb;
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(-15px);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* === Colores según tipo === */
+.reports-toast.success {
+  background-color: #16a34a;
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.4);
+}
+
+.reports-toast.error {
+  background-color: #dc2626;
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+}
+
+.reports-toast.info {
+  background-color: #2563eb;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+/* === Estado visible === */
+.reports-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .reports-toast {
+    right: 15px;
+    top: 75px;
+    min-width: 220px;
+    font-size: 0.9rem;
+  }
+}
+
+/* === Ajuste de contenedor dentro del modal de Ventas === */
+.reports-card .reports-sales-list {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.reports-card .export-buttons {
+  margin-bottom: 0.5rem;
+}
+
+.reports-no-permissions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  font-size: 1.2rem;
+  font-family: "Inter", sans-serif;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  margin: 2rem;
+  text-align: center;
+}

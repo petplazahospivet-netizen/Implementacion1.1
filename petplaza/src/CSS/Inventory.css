@@ -1,0 +1,610 @@
+/* ==========================================================
+   CONTENEDOR PRINCIPAL DEL INVENTARIO
+   ========================================================== */
+.inventory-container {
+  background: #f9fafb;
+  padding: 2rem;
+  min-height: calc(100vh - 120px);
+  font-family: "Inter", sans-serif;
+  color: #111827;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.inventory-content {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 1100px;
+  box-shadow: none;
+}
+
+.inventory-content h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+/* ==========================================================
+   TARJETAS RESUMEN (TOTAL, STOCK, VENCIDOS, VALOR)
+   ========================================================== */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid #e5e7eb;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  gap: 0.8rem;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* ==========================================================
+   ICONOS DE LAS TARJETAS
+   ========================================================== */
+.icon {
+  padding: 0.55rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.icon-inner {
+  width: 22px;
+  height: 22px;
+  color: #fff;
+}
+
+.icon.blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+.icon.orange {
+  background: linear-gradient(135deg, #dc2626, #dc2626);
+}
+.icon.red {
+  background: linear-gradient(135deg, #9512a1, #9512a1);
+}
+.icon.green {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+/* ==========================================================
+   BARRA DE HERRAMIENTAS
+   ========================================================== */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.toolbar input {
+  flex: 1;
+  padding: 10px 0.1px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  min-width: 220px;
+}
+
+/* Un solo estilo para botones principales */
+.inventory-btn.add {
+  background: #00a884; /* color único */
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.inventory-btn.add:hover,
+.inventory-btn.add:focus {
+  box-shadow: 0 0 10px rgba(4, 255, 96, 0.6);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.inventory-btn.add:active {
+  background: #0cca6b;
+  transform: translateY(0px) scale(0.98);
+  box-shadow: 0 0 12px rgba(4, 255, 96, 0.7);
+}
+
+/* ==========================================================
+   TABLA
+   ========================================================== */
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.inventory-table thead {
+  background: #f3f4f6;
+}
+
+.inventory-table th {
+  text-align: left;
+  padding: 14px 12px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.inventory-table td {
+  padding: 14px 12px;
+  border-top: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+.inventory-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.inventory-table td:nth-child(3),
+.inventory-table th:nth-child(3) {
+  text-align: center;
+  font-weight: 600;
+  color: #111827c4;
+}
+
+/* ==========================================================
+   BOTONES DE ACCIÓN EN TABLA
+   ========================================================== */
+.inventory-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.action-btn {
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn.edit {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.action-btn.edit:hover,
+.action-btn.edit:focus {
+  transform: scale(1.15);
+  box-shadow: 0 0 8px rgba(17, 153, 226, 0.9);
+}
+
+.action-btn.delete {
+  background: #fee2e2;
+  color: #f80101;
+}
+.action-btn.delete:hover,
+.action-btn.delete:focus {
+  transform: scale(1.1);
+  box-shadow: 0 0 6px rgba(255, 2, 2, 0.8);
+}
+
+/* ==========================================================
+   ESTADOS
+   ========================================================== */
+.expired {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+.status.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+.status.warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+.status.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ==========================================================
+   MODAL CREAR/EDITAR
+   ========================================================== */
+.inventory-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 900;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.inventory-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+  animation: fadeInBg 0.3s ease forwards;
+}
+.inventory-modal-overlay.closing {
+  animation: fadeOutBg 0.3s ease forwards;
+}
+
+@keyframes fadeInBg {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeOutBg {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.inventory-modal {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 10px;
+  width: 420px;
+  max-width: 95%;
+  max-height: 85vh;
+  overflow-y: auto;
+  transform: translateY(-20px);
+  opacity: 0;
+  animation: slideIn 0.3s ease forwards;
+}
+.inventory-modal.closing {
+  animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+}
+
+.inventory-modal h3 {
+  margin: 0 0 0.8rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.modal-form {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row label {
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+  color: #374151;
+}
+
+.form-row input {
+  padding: 7px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+/* Botones modal */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.modal-actions .inventory-btn.add {
+  background: #00a884; /* mismo color que el botón principal */
+  color: #ffffff;
+  font-size: 0.8rem;
+  padding: 7px 12px;
+  border-radius: 6px;
+}
+
+.modal-actions .inventory-btn.cancel {
+  background: #941616;
+  color: #ffffff;
+  font-size: 0.8rem;
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.modal-actions .inventory-btn.cancel:hover,
+.modal-actions .inventory-btn.cancel:focus {
+  background: #b91c1c;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+  transform: scale(1.05);
+  outline: none;
+}
+.modal-actions .inventory-btn.cancel:active {
+  background: #7f1d1d;
+  transform: translateY(0px) scale(0.95);
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.8);
+}
+
+/* ==========================================================
+   MODAL ELIMINAR
+   ========================================================== */
+.inventory-delete-modal {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 95%;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+.inventory-delete-modal h2 {
+  margin: 0 0 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #dc2626;
+}
+.inventory-delete-modal p {
+  font-size: 0.95rem;
+  color: #374151;
+  margin-bottom: 1.2rem;
+}
+.inventory-delete-modal .modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.inventory-delete-modal .btn-danger {
+  background: #dc2626;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+.inventory-delete-modal .btn-danger:hover {
+  background: #b91c1c;
+}
+.inventory-delete-modal .btn-cancel-alt {
+  background: #e5e7eb;
+  color: #374151;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+.inventory-delete-modal .btn-cancel-alt:hover {
+  background: #d1d5db;
+}
+
+/* ==========================================================
+   RESPONSIVO
+   ========================================================== */
+@media (max-width: 900px) {
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+  .toolbar {
+    flex-direction: column;
+  }
+  .toolbar input {
+    width: 100%;
+  }
+  .inventory-btn.add {
+    width: 100%;
+  }
+}
+
+/* ==========================================================
+   ⚡ MODO TARJETA PARA PANTALLAS PEQUEÑAS (NUEVO)
+   ========================================================== */
+
+@media (max-width: 768px) {
+  /* Ocultar encabezados de la tabla */
+  .inventory-table thead {
+    display: none !important;
+  }
+
+  /* Cada fila se comporta como tarjeta */
+  .inventory-table tr {
+    display: block;
+    background: #ffffff;
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(27, 27, 27, 0.548);
+    transition: transform 0.2s ease;
+  }
+
+  .inventory-table tr:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Cada celda será una línea dentro de la tarjeta */
+  .inventory-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 6px;
+    border: none !important;
+    font-size: 0.9rem;
+  }
+
+  /* Etiqueta automática usando los data-label */
+  .inventory-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #375138;
+    margin-right: 10px;
+  }
+
+  /* Acciones se organizan abajo */
+  .inventory-actions {
+    justify-content: flex-end !important;
+    margin-top: 10px;
+  }
+
+  .action-btn {
+    padding: 6px;
+  }
+
+  /* Quitar el hover gris heredado de la tabla */
+  .inventory-table tbody tr:hover {
+    background: #ffffff !important;
+  }
+}
+
+/* ======================== TOAST ======================== */
+.toast-notify {
+  position: fixed;
+  top: 65px;
+  right: 20px;
+  bottom: auto;
+  background: #00a884dc;
+  padding: 12px 18px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(3, 161, 153, 0.822);
+  animation: toastIn 0.3s ease forwards;
+  z-index: 9999;
+  font-family: "Inter", sans-serif;
+}
+
+.toast-notify.success {
+  border-left: 5px solid #00a884;
+  color: #ece6e6;
+}
+
+.toast-notify.error {
+  border-left: 5px solid #dc2626;
+  color: #7f1d1d;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.inventory-no-permissions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  font-size: 1.2rem;
+  font-family: "Inter", sans-serif;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  margin: 2rem;
+  text-align: center;
+}

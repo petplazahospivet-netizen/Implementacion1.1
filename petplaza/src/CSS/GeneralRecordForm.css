@@ -1,0 +1,558 @@
+/* =========================================================
+   EXPEDIENTE GENERAL - FORMULARIO MODAL (ESPACIADO OPTIMIZADO)
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   🔲 Fondo semitransparente detrás del modal principal
+--------------------------------------------------------- */
+.general-modal-overlay {
+  position: fixed; /* Fija el overlay sobre toda la pantalla */
+  inset: 0; /* Cubre completamente el viewport */
+  background: rgba(20, 20, 20, 0.65); /* Fondo oscuro con opacidad */
+  display: flex; /* Centra el modal */
+  align-items: center; /* Centrado vertical */
+  justify-content: center; /* Centrado horizontal */
+  z-index: 60; /* Se coloca sobre el contenido */
+  animation: fadeIn 0.3s ease forwards; /* Animación de entrada */
+}
+
+/* ---------------------------------------------------------
+   🧱 Contenedor principal del modal
+--------------------------------------------------------- */
+.general-modal {
+  width: 520px; /* Ancho base del modal */
+  max-width: 92vw; /* Evita desbordes en pantallas pequeñas */
+  max-height: 84vh; /* Limita la altura visible */
+  overflow-y: auto; /* Permite scroll vertical */
+  overflow-x: hidden; /* Oculta scroll horizontal */
+  background: #ffffff; /* Fondo blanco */
+  border-radius: 16px; /* Bordes redondeados */
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35); /* Sombra flotante */
+  font-family: "Inter", system-ui, sans-serif; /* Tipografía */
+  padding: 28px 30px 26px; /* Espaciado interno */
+  position: relative; /* Para ubicar botones absolutos */
+  animation: scaleIn 0.3s ease forwards; /* Animación de entrada */
+  transform-origin: center; /* Escala desde el centro */
+}
+
+/* ---------------------------------------------------------
+   🎚 Scroll personalizado del modal
+--------------------------------------------------------- */
+.general-modal::-webkit-scrollbar {
+  width: 6px; /* Grosor del scrollbar */
+}
+.general-modal::-webkit-scrollbar-thumb {
+  background: #00a884; /* Color del scrollbar */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+/* ---------------------------------------------------------
+   🧭 Cabecera del modal
+--------------------------------------------------------- */
+.general-modal .modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
+}
+
+/* Título del modal */
+.general-modal .modal-header h2 {
+  color: #00a884;
+  margin: 0;
+  flex: 1;
+  font-weight: 800;
+  font-size: 1.4rem;
+}
+
+/* ---------------------------------------------------------
+   ❌ Botones de cerrar y limpiar
+--------------------------------------------------------- */
+.general-modal .close,
+.general-modal .clean {
+  border: 2px solid #00a884;
+  color: #00a884;
+  background: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Efecto hover en botones */
+.general-modal .close:hover,
+.general-modal .clean:hover {
+  background: #00a88418;
+  transform: scale(1.1);
+}
+
+/* Posición de los botones */
+.general-modal .close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+}
+.general-modal .clean {
+  position: absolute;
+  right: 58px;
+  top: 16px;
+}
+
+/* ---------------------------------------------------------
+   📋 Formulario general y campos
+--------------------------------------------------------- */
+.general-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Cada etiqueta (label) agrupa título + campo */
+.general-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Estilo del título del campo */
+.general-modal label span {
+  font-weight: 700;
+  color: #00a884;
+  font-size: 0.96rem;
+}
+
+/* ---------------------------------------------------------
+   🧩 Campos de texto y menús desplegables
+--------------------------------------------------------- */
+.general-modal select {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.98rem;
+  background: #fafafa;
+  transition: all 0.2s ease;
+  align-self: center;
+}
+
+.general-modal input,
+.general-modal textarea {
+  width: 100%;
+  max-width: 485px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.98rem;
+  background: #fafafa;
+  transition: all 0.2s ease;
+  align-self: center;
+}
+
+/* Hover sobre campos */
+.general-modal input:hover,
+.general-modal select:hover,
+.general-modal textarea:hover {
+  background: #ffffff;
+  border-color: #00a88480;
+}
+
+/* Foco en campos */
+.general-modal input:focus,
+.general-modal select:focus,
+.general-modal textarea:focus {
+  outline: none;
+  border-color: #00a884;
+  box-shadow: 0 0 0 3px rgba(0, 168, 132, 0.25);
+  background: #ffffff;
+}
+
+/* Área de texto adaptable */
+.general-modal textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+
+/* ==========================================================
+    VACUNAS Y MEDICAMENTOS SELECCIONADOS (PÍLDORAS)
+========================================================== */
+.general-modal .selected-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+  width: 100%;
+}
+
+.general-modal .pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 25px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  background-color: #f1f5f9; /* gris claro base */
+  color: #111827;
+  border: 1px solid #d1d5db;
+  transition: background 0.2s, transform 0.2s;
+  cursor: default;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.general-modal .pill:hover {
+  transform: scale(1.02);
+}
+
+/* Vacuna */
+.general-modal .pill-v {
+  background-color: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
+/* Medicamento */
+.general-modal .pill-m {
+  background-color: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #075985;
+}
+
+.general-modal .pill button {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  line-height: 1;
+  color: #ef4444;
+  cursor: pointer;
+  margin-left: 6px;
+  padding: 0;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.general-modal .pill button:hover {
+  color: #b91c1c;
+  transform: scale(1.15);
+}
+
+/* ---------------------------------------------------------
+   🖼️ Imágenes previsualizadas
+--------------------------------------------------------- */
+.general-modal .images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  justify-content: flex-start;
+}
+
+/* Contenedor de miniatura */
+.general-modal .thumb {
+  position: relative;
+}
+
+/* Imagen miniatura */
+.general-modal .thumb img {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Efecto hover sobre la miniatura */
+.general-modal .thumb img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón de eliminar imagen */
+.general-modal .thumb .trash {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  border: none;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.general-modal .thumb .trash:hover {
+  background: #ef4444;
+  transform: scale(1.15);
+}
+
+/* ---------------------------------------------------------
+   🔁 Botones de navegación entre formularios
+--------------------------------------------------------- */
+.general-modal .buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 12px;
+}
+
+/* Estilo general de botones */
+.general-modal .ghost {
+  background: #fff;
+  color: #00a884;
+  border: 2px solid #00a884;
+  border-radius: 10px;
+  height: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.86rem;
+  transition: all 0.25s ease;
+   margin-top: 12px
+}
+.general-modal .ghost:hover {
+  background: #00a88415;
+  transform: translateY(-2px);
+}
+
+/* ---------------------------------------------------------
+   🧩 Botones inferiores (Cancelar / Actualizar)
+--------------------------------------------------------- */
+.general-modal .footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+/* Base de botones */
+.general-modal .secondary,
+.general-modal .primary {
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+}
+
+/* Botón cancelar */
+.general-modal .secondary {
+  background: #da2525;
+  color: #f5f5f5;
+}
+.general-modal .secondary:hover {
+  background: #ff0000;
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgb(255, 51, 0);
+}
+
+/* Botón actualizar */
+.general-modal .primary {
+  background: #00a884;
+  color: #fff;
+}
+.general-modal .primary:hover {
+  background: #09b184;
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgb(2, 247, 255);
+}
+
+/* ---------------------------------------------------------
+   ⚠️ Validación y advertencias visuales
+--------------------------------------------------------- */
+.general-modal label.error input,
+.general-modal label.error select,
+.general-modal label.error textarea {
+  border: 2px solid #ff4444;
+  animation: shake 0.2s ease-in-out 2;
+  background: #ffecec;
+}
+
+/* Texto de error */
+.general-modal label.error small {
+  color: #ff4444;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-top: -4px;
+  margin-left: 2px;
+}
+
+/* Animación de vibración */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ---------------------------------------------------------
+   🔔 Notificación flotante (más ancha y legible)
+--------------------------------------------------------- */
+.notif {
+  position: fixed; /* Flota sobre todo el contenido */
+  bottom: 24px; /* Distancia inferior */
+  right: 28px; /* Anclada a la esquina derecha */
+  background: #00a884; /* Fondo verde principal */
+  color: #fff; /* Texto blanco */
+  padding: 12px 26px; /* Espaciado más amplio lateral */
+  border-radius: 14px; /* Bordes suaves */
+  display: flex; /* Centra ícono + texto */
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Separación entre ícono y texto */
+  font-weight: 600;
+  z-index: 120; /* Encima del modal */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Sombra elegante */
+  animation: slideRight 0.4s ease forwards; /* Animación de entrada */
+  max-width: 340px; /* Más ancho para texto largo */
+  text-align: left;
+  white-space: normal; /* Permite salto de línea */
+  line-height: 1.3; /* Mejora legibilidad */
+}
+
+/* Notificación de tipo eliminación */
+.notif.delete {
+  background: #ff4444;
+}
+
+/* Animación suave desde esquina inferior derecha */
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translate(20px, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+/* ---------------------------------------------------------
+   ✨ Animaciones globales de entrada/salida modal
+--------------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes scaleOut {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(0.9); opacity: 0; }
+}
+
+.general-modal-overlay.closing {
+  animation: fadeOut 0.3s ease forwards;
+}
+.general-modal.closing {
+  animation: scaleOut 0.3s ease forwards;
+}
+
+/* ---------------------------------------------------------
+   📱 Responsividad (Tablets y Móviles)
+--------------------------------------------------------- */
+@media (max-width: 768px) {
+  .notif {
+    right: 16px;
+    bottom: 16px;
+    max-width: 280px;
+    font-size: 0.85rem;
+    padding: 10px 20px;
+  }
+
+  .general-modal {
+    width: 90%;
+    padding: 22px 20px 20px;
+    max-height: 88vh;
+  }
+
+  .general-modal .modal-header h2 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .general-modal input,
+  .general-modal textarea,
+  .general-modal select {
+    max-width: 100%;
+  }
+
+  .general-modal .buttons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .general-modal .ghost {
+    width: 100%;
+  }
+
+  .general-modal .footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .general-modal .primary,
+  .general-modal .secondary {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Versión móvil compacta */
+@media (max-width: 480px) {
+  .notif {
+    right: 12px;
+    bottom: 12px;
+    max-width: 240px;
+    font-size: 0.8rem;
+    padding: 10px 18px;
+  }
+
+  .general-modal {
+    width: 94%;
+    padding: 18px 16px;
+    border-radius: 12px;
+  }
+
+  .general-modal .modal-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .general-modal input,
+  .general-modal textarea,
+  .general-modal select {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+
+  .general-modal .ghost {
+    height: 40px;
+    font-size: 0.8rem;
+  }
+
+  .general-modal .footer {
+    gap: 8px;
+  }
+
+  
+ 
+}

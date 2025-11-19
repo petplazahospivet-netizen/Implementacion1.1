@@ -1,0 +1,408 @@
+/* =========================================================
+   RECORD PREVIEW MODAL - PETPLAZA HOSPIVET (EXTENDIDO)
+   ========================================================= */
+
+.record-preview-modal .preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 15, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.25s ease;
+}
+
+.record-preview-modal .preview-overlay.closing {
+  animation: fadeOut 0.25s ease forwards;
+}
+
+.record-preview-modal .preview-modal {
+  width: 720px;
+  max-width: 95vw;
+  max-height: 85vh;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  animation: scaleIn 0.3s ease;
+}
+
+.record-preview-modal .preview-modal.closing {
+  animation: scaleOut 0.25s ease forwards;
+}
+
+/* ============================
+   HEADER
+   ============================ */
+.record-preview-modal .preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.record-preview-modal .icon-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.record-preview-modal .preview-header h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.record-preview-modal .btn-close {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  transition: transform 0.25s ease, color 0.2s;
+}
+
+.record-preview-modal .btn-close:hover {
+  transform: scale(1.15);
+  color: #00a884;
+}
+
+/* ============================
+   BODY
+   ============================ */
+.record-preview-modal .preview-body {
+  padding: 24px 30px 32px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.record-preview-modal .preview-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.record-preview-modal .preview-body::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 8px;
+}
+
+/* TITLES */
+.record-preview-modal .pet-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent-color, #00a884);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.record-preview-modal .owner-info {
+  color: #444;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+/* ============================
+   GRID INFO
+   ============================ */
+.record-preview-modal .record-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.record-preview-modal .info-item {
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: background 0.2s, transform 0.2s;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.record-preview-modal .info-item:hover {
+  background: #f3f4f6;
+  transform: scale(1.01);
+}
+
+.record-preview-modal .info-item .label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 3px;
+  text-transform: capitalize;
+}
+
+.record-preview-modal .info-item .value {
+  font-weight: 600;
+  color: #111827;
+  white-space: pre-wrap;
+}
+
+/* ============================
+   GROUP / SECTION TITLES
+   ============================ */
+.record-preview-modal .section-title {
+  margin-top: 26px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #111827;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 6px;
+}
+
+/* ============================
+   NOTES SECTION
+   ============================ */
+.record-preview-modal .notes-box {
+  background: #eefcf6;
+  border-left: 5px solid #00a884;
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-top: 22px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.record-preview-modal .notes-box:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.record-preview-modal .notes-box p {
+  margin: 6px 0 0;
+  color: #222;
+  line-height: 1.45;
+  font-size: 0.96rem;
+  white-space: pre-wrap;
+}
+
+/* ============================
+   VACCINES
+   ============================ */
+.record-preview-modal .vaccines-box {
+  margin-top: 24px;
+  padding: 16px 18px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.record-preview-modal .vaccines-box:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.record-preview-modal .vaccines-box h4 {
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+}
+
+.record-preview-modal .vaccines-box ul {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.record-preview-modal .vaccines-box li {
+  color: #222;
+  font-size: 0.96rem;
+  margin-bottom: 5px;
+}
+
+/* Colores dinámicos por tipo de expediente */
+.preview-modal.general .vaccines-box {
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+}
+
+.preview-modal.general .vaccines-box h4 {
+  color: #00a884;
+}
+
+.preview-modal.surgery .vaccines-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.preview-modal.surgery .vaccines-box h4 {
+  color: #ef4444;
+}
+
+.preview-modal.care .vaccines-box {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+}
+
+.preview-modal.care .vaccines-box h4 {
+  color: #007bff;
+}
+
+/* ============================
+   IMAGES SECTION
+   ============================ */
+.record-preview-modal .images-section {
+  margin-top: 24px;
+}
+
+.record-preview-modal .images-section h4 {
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.record-preview-modal .images-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.record-preview-modal .images-grid img {
+  width: 120px;
+  height: 90px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.record-preview-modal .images-grid img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* ============================
+   TEMAS DE COLOR POR TIPO DE EXPEDIENTE
+   ============================ */
+
+/* GENERAL (verde) */
+.preview-modal.general .pet-title,
+.preview-modal.general .notes-box,
+.preview-modal.general .vaccines-box h4 {
+  color: #00a884;
+  border-color: #00a884;
+}
+.preview-modal.general .notes-box {
+  background: rgba(0, 168, 132, 0.1);
+}
+
+/* CIRUGÍA (rojo) */
+.preview-modal.surgery .pet-title,
+.preview-modal.surgery .notes-box,
+.preview-modal.surgery .vaccines-box h4 {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+.preview-modal.surgery .notes-box {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* CUIDADOS EN CASA (azul) */
+.preview-modal.care .pet-title,
+.preview-modal.care .notes-box,
+.preview-modal.care .vaccines-box h4 {
+  color: #007bff;
+  border-color: #007bff;
+}
+.preview-modal.care .notes-box {
+  background: rgba(0, 123, 255, 0.1);
+}
+
+/* ============================
+   ANIMATIONS
+   ============================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+}
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+@media (max-width: 768px) {
+  .record-preview-modal .preview-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .record-preview-modal .preview-header {
+    padding: 16px 20px;
+  }
+
+  .record-preview-modal .preview-body {
+    padding: 18px 22px;
+  }
+
+  .record-preview-modal .record-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   NUEVAS SECCIONES EXTENDIDAS
+   ============================ */
+.record-preview-modal .info-item.long-text {
+  grid-column: 1 / -1;
+}
+
+.record-preview-modal .info-item.long-text .value {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.record-preview-modal .section-group {
+  margin-top: 24px;
+  padding-top: 6px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.record-preview-modal .section-group h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #222;
+}

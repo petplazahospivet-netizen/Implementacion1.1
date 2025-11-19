@@ -1,0 +1,19 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // 📁 Carpeta donde se guardan las imágenes de expedientes
+    match /expedientes/{allPaths=**} {
+      // 🔓 Permitir leer (para mostrar imágenes o generar PDF)
+      allow read: if true;
+
+      // ✏️ Permitir subir archivos pequeños (<10 MB) hasta 2026 sin autenticación
+      allow write: if request.resource.size < 10 * 1024 * 1024
+                   && request.time < timestamp.date(2026, 1, 1);
+    }
+
+    // 🔒 Bloquear todo lo demás fuera de la carpeta /expedientes/
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

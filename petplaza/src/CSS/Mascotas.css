@@ -1,0 +1,509 @@
+/* ==========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================== */
+.mascotas-container {
+  padding: 20px; /* Espaciado interno del contenedor principal */
+  background: #f8f9fa; /* Color de fondo general */
+  font-family: "Inter", "Roboto", sans-serif; /* Tipografía general */
+  position: relative; /* Para poder posicionar elementos sobresalientes */
+}
+
+/* ==========================================================
+   ENCABEZADO
+   ========================================================== */
+.mascotas-container .mascotas-header {
+  display: flex; /* Usar flexbox para distribución horizontal */
+  justify-content: space-between; /* Separar título y botón */
+  align-items: center; /* Centrar verticalmente */
+  margin-bottom: 20px; /* Espaciado inferior */
+  position: relative; /* Para posicionar iconos sobresalientes */
+}
+
+/* Wrapper para título + ícono */
+.mascotas-container .mascotas-title-wrapper {
+  display: flex; /* Flex horizontal */
+  align-items: flex-start; /* Alinear al inicio para que el ícono quede más arriba */
+  gap: 20px; /* Espacio entre ícono y texto */
+  position: relative; /* Para permitir que el ícono sobresalga */
+  margin-left: 40px; /* Mueve todo el conjunto hacia la derecha */
+}
+
+/* Ícono del título */
+.mascotas-container .mascotas-title-wrapper svg {
+  width: 32px; /* Tamaño del ícono */
+  height: 32px;
+  fill: none; /* Sin relleno */
+  stroke: #00ff22; /* Contorno verde medio */
+  stroke-width: 19px; /* Grosor del contorno aumentado */
+  position: absolute; /* Posición absoluta para sobresalir */
+  left: -40px; /* Separación respecto al texto */
+  top: -6px; /* Lo sube un poco por encima del texto */
+  flex-shrink: 0; /* No se achique */
+  transition: transform 0.2s ease, stroke 0.2s ease; /* Transición suave */
+}
+
+/* Título principal */
+.mascotas-container .mascotas-title {
+  font-size: 22px; /* Tamaño de letra del título */
+  font-weight: 600; /* Grosor de la fuente */
+  color: #1d1d1f; /* Color del texto */
+  margin: 0; /* Elimina márgenes predeterminados */
+  line-height: 1.2;
+}
+
+/* Subtítulo */
+.mascotas-container .mascotas-subtitle {
+  font-size: 14px; /* Tamaño de letra del subtítulo */
+  color: #6b7280; /* Color gris para subtítulo */
+  margin: 2px 0 0 0; /* Espaciado superior pequeño */
+}
+
+/* ==========================================================
+   BOTÓN NUEVA MASCOTA
+   ========================================================== */
+.mascotas-container .btn-nueva-mascota {
+  background: #00a884; /* Color de fondo principal */
+  color: #fff; /* Color del texto */
+  padding: 10px 18px; /* Espaciado interno */
+  border: none; /* Sin borde */
+  border-radius: 14px; /* Bordes redondeados */
+  font-size: 14px; /* Tamaño del texto */
+  cursor: pointer; /* Cambia el cursor al pasar encima */
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; /* Transición suave */
+}
+.mascotas-container .btn-nueva-mascota:hover {
+  background: #059669; /* Cambio de color al hover */
+  transform: scale(1.05); /* Aumenta tamaño ligeramente */
+  box-shadow: 0 0 12px rgba(0, 168, 132, 0.4); /* Sombra al pasar el mouse */
+}
+
+/* ==========================================================
+   BUSCADOR
+   ========================================================== */
+.mascotas-container .mascotas-search {
+  position: relative; /* Para posicionar la lupa */
+  margin-bottom: 20px; /* Espaciado inferior */
+  max-width: 600px; /* Ancho máximo del buscador */
+}
+
+.mascotas-container .mascotas-search input {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  padding: 12px 16px; /* Espaciado interno */
+  padding-left: 40px; /* Deja espacio para la lupa */
+  border: 1px solid #e5e7eb; /* Borde gris claro */
+  border-radius: 10px; /* Bordes redondeados */
+  font-size: 14px; /* Tamaño del texto */
+  outline: none; /* Quita el outline por defecto */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease; /* Transición suave */
+}
+.mascotas-container .mascotas-search input:focus {
+  border-color: #00a884; /* Color del borde al enfocarse */
+  box-shadow: 0 0 8px rgba(0, 168, 132, 0.4); /* Sombra al enfocar */
+}
+
+/* Ícono de lupa */
+.mascotas-container .mascotas-search .search-icon {
+  position: absolute; /* Posicionamos la lupa dentro del contenedor */
+  left: 12px; /* Separación del borde izquierdo del input */
+  top: 50%; /* Centrado vertical */
+  transform: translateY(-50%); /* Ajuste vertical exacto */
+  color: #6b7280; /* Color de la lupa */
+  font-size: 16px; /* Tamaño de la lupa */
+  pointer-events: none; /* No bloquea escribir en el input */
+}
+
+/* ==========================================================
+   GRID DE TARJETAS
+   ========================================================== */
+.mascotas-container .mascotas-grid {
+  display: grid; /* Usar grid para tarjetas */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Columnas adaptables */
+  gap: 20px; /* Espacio entre tarjetas */
+}
+
+/* Estado vacío */
+.mascotas-container .empty-state {
+  grid-column: 1 / -1; /* Ocupa todo el ancho del grid */
+  text-align: center; /* Centrar el texto */
+  color: #6b7280; /* Color gris */
+  padding: 28px 0; /* Espaciado vertical */
+  font-size: 15px; /* Tamaño de letra */
+  font-style: italic; /* Estilo cursiva */
+}
+
+/* ==========================================================
+   TARJETA DE MASCOTA
+   ========================================================== */
+.mascotas-container .mascota-card {
+  background: #fff; /* Fondo blanco */
+  border-radius: 14px; /* Bordes redondeados */
+  padding: 18px; /* Espaciado interno */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra ligera */
+  position: relative; /* Para posicionar acciones */
+  transition: transform 0.25s ease, box-shadow 0.25s ease; /* Transición suave */
+}
+.mascotas-container .mascota-card:hover {
+  transform: translateY(-5px); /* Eleva la tarjeta al hover */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12); /* Sombra más intensa al hover */
+}
+
+/* Encabezado tarjeta */
+.mascotas-container .mascota-header {
+  display: flex; /* Flexbox horizontal */
+  align-items: center; /* Centrado vertical */
+  gap: 12px; /* Espacio entre icono y texto */
+  margin-bottom: 8px; /* Margen inferior */
+}
+
+/* Círculo con huella */
+.mascotas-container .mascota-icon {
+  width: 56px; /* Ancho */
+  height: 56px; /* Alto */
+  border-radius: 50%; /* Circular */
+  background: #eafaf1; /* Fondo verde pálido */
+  border: 2px solid #5ff741e8; /* Borde verde */
+  display: flex; /* Centrar icono */
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* No se achica */
+  transform: rotate(25deg); /* Rotación para efecto visual */
+  box-shadow: 0 6px 16px rgba(0, 168, 132, 0.08); /* Sombra */
+}
+.mascotas-container .mascota-icon svg {
+  width: 28px; /* Tamaño del icono */
+  height: 28px;
+  display: block;
+  background: transparent; /* Fondo transparente */
+}
+.mascotas-container .mascota-icon svg path,
+.mascotas-container .mascota-icon svg circle,
+.mascotas-container .mascota-icon svg g {
+  fill: #eafaf1 !important; /* Color de relleno */
+  stroke: #35f50fe8 !important; /* Color del borde */
+  stroke-width: 1.6px !important;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Títulos */
+.mascotas-container .mascota-titles {
+  display: flex; /* Flex vertical */
+  flex-direction: column;
+}
+.mascotas-container .mascota-nombre {
+  font-size: 18px; /* Tamaño del nombre */
+  font-weight: 600; /* Grosor */
+  color: #1d1d1f; /* Color texto */
+  margin: 0;
+  line-height: 1.2;
+}
+.mascotas-container .mascota-raza {
+  font-size: 14px; /* Tamaño de subtítulo */
+  color: #6b7280;
+  margin: 2px 0 0 0;
+}
+
+/* Texto dentro tarjeta */
+.mascotas-container .mascota-card p {
+  font-size: 14px;
+  color: #374151;
+  margin: 6px 0;
+  display: flex; /* Para icono y texto alineados */
+  align-items: center;
+  gap: 8px;
+}
+.mascotas-container .mascota-card p svg {
+  font-size: 16px;
+  color: #6b7280;
+  opacity: 0.9;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.mascotas-container .mascota-card p svg:hover {
+  transform: scale(1.15);
+  color: #00a884;
+}
+.mascotas-container .palette-icon {
+  color: #6b7280;
+}
+
+/* ==========================================================
+   ACCIONES TARJETA (EDITAR/ELIMINAR)
+   ========================================================== */
+.mascotas-container .card-actions {
+  position: absolute; /* Posición absoluta */
+  top: 10px;
+  right: 12px;
+  display: flex; /* Flex horizontal */
+  gap: 6px; /* Espacio entre botones */
+}
+.mascotas-container .card-actions .icon {
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mascotas-container .card-actions .edit {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.mascotas-container .card-actions .edit:hover,
+.mascotas-container .card-actions .edit:focus {
+  transform: scale(1.15);
+  box-shadow: 0 0 8px rgba(17, 153, 226, 0.9);
+  outline: none;
+}
+.mascotas-container .card-actions .delete {
+  background: #fee2e2;
+  color: #f80101;
+}
+.mascotas-container .card-actions .delete:hover,
+.mascotas-container .card-actions .delete:focus {
+  transform: scale(1.1);
+  box-shadow: 0 0 6px rgba(255, 2, 2, 0.815);
+  outline: none;
+}
+
+/* ==========================================================
+   MODALES (RESPONSIVE FIX)
+   ========================================================== */
+.mascotas-container .modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.35);
+  z-index: 9999;
+  overflow-y: auto;          /* permite scroll del overlay */
+  padding: 20px;             /* evita que el modal pegue a los bordes */
+}
+
+.mascotas-container .modal {
+  background: #ffffff;
+  width: 520px;
+  max-width: 100%;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.18);
+  animation: modalIn 250ms ease forwards;
+
+  /* --- FIX RESPONSIVE --- */
+  max-height: 85vh;        /* el modal nunca será más alto que la pantalla */
+  overflow-y: auto;        /* scroll interno */
+}
+
+/* overlay animaciones */
+.mascotas-container .modal-overlay.active {
+  animation: overlayIn 250ms ease forwards;
+}
+.mascotas-container .modal-overlay.closing {
+  animation: overlayOut 250ms ease forwards;
+}
+
+/* Fix inputs para que no se desborden */
+.mascotas-container .modal-form label {
+  min-width: 100%;
+}
+
+.mascotas-container .modal-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Móviles */
+@media (max-width: 768px) {
+  .mascotas-container .modal {
+    width: 100%;
+    max-height: 90vh;     /* poquito más alto en móviles */
+    padding: 18px;
+  }
+
+  .mascotas-container .modal-form {
+    grid-template-columns: 1fr; /* inputs en 1 columna */
+  }
+}
+
+/* Animaciones */
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes overlayOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes modalIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes modalOut {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(20px); opacity: 0; }
+}
+
+
+/* Contenido modal */
+.mascotas-container .modal h3 {
+  margin: 0 0 14px 0; /* Margen inferior */
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+/* Formulario modal con labels */
+.mascotas-container .modal-form {
+  display: grid; /* Grid para inputs */
+  grid-template-columns: 1fr 1fr; /* Dos columnas */
+  gap: 12px; /* Espacio entre campos */
+  margin-bottom: 18px;
+}
+.mascotas-container .modal-form label {
+  display: flex; /* Flex vertical para label + input */
+  flex-direction: column;
+  font-size: 14px; /* Tamaño del label */
+  color: #374151; /* Color del texto */
+  gap: 4px; /* Espacio entre label y campo */
+}
+.mascotas-container .modal-form input,
+.mascotas-container .modal-form select {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.mascotas-container .modal-form input:focus,
+.mascotas-container .modal-form select:focus {
+  border-color: #00a884;
+  box-shadow: 0 0 6px rgba(0, 168, 132, 0.4);
+}
+
+/* Botones modal */
+.mascotas-container .modal-actions {
+  display: flex; /* Flex horizontal */
+  justify-content: flex-end; /* Alineación derecha */
+  gap: 10px;
+}
+.mascotas-container .btn-cancelar {
+  background: #e40b0b;
+  padding: 8px 14px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.mascotas-container .btn-cancelar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgb(252, 0, 0);
+}
+.mascotas-container .btn-guardar {
+  background: #00a884;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.mascotas-container .btn-guardar:hover {
+  background: #059669;
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgb(0, 255, 200);
+}
+
+/* ==========================================================
+   TOAST DE CONFIRMACIÓN (ÉXITO / ERROR)
+   ========================================================== */
+/* 🔹 Contenedor general del toast */
+.mascotas-container .toast {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 230px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-size: 0.875rem;
+  animation: slideIn 0.4s ease;
+}
+
+/* 🔹 Estilo del toast según tipo */
+.mascotas-container .toast.success {
+  background: #00a884e6; /* verde */
+}
+
+.mascotas-container .toast.error {
+  background: #1f2937e6; /* gris oscuro */
+}
+
+/* 🔹 Animación de aparición */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+@media (max-width: 768px) {
+  .mascotas-container .mascotas-header {
+    flex-direction: column; /* Header vertical en pantallas pequeñas */
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .mascotas-container .btn-nueva-mascota {
+    width: 100%; /* Botón ocupa todo el ancho */
+    text-align: center;
+  }
+
+  .mascotas-container .modal-form {
+    grid-template-columns: 1fr; /* Campos apilados */
+  }
+
+  /* Ajuste del buscador en responsividad */
+  .mascotas-container .mascotas-search input {
+    width: 80%; /* Que siga ocupando todo el contenedor */
+    max-width: 300px; /* Limita la longitud en móviles */
+    margin: 0; /* Eliminamos el centrado automático */
+    display: block; /* Para que funcione correctamente */
+  }
+}
+
+.mascotas-no-permissions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  font-size: 1.2rem;
+  font-family: "Inter", sans-serif;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  margin: 2rem;
+  text-align: center;
+}

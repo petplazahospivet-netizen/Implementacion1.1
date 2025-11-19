@@ -1,0 +1,434 @@
+/* ===== WRAPPER ÚNICO PARA LOGIN ===== */ /* Comentario de sección: identifica el bloque de estilos del wrapper del login */
+/* Selector raíz .login-wrapper vacío: contenedor principal para agrupar estilos del login */
+
+/* Fondo general */ /* Comentario: sección que define el fondo y disposición general de la pantalla de login */
+.login-wrapper .login-bg {
+  /* Selector: contenedor que representa el fondo o área principal visible del login */
+  display: flex; /* Propiedad: activa Flexbox para este contenedor */
+  justify-content: center; /* Propiedad: centra horizontalmente el contenido hijo dentro del contenedor */
+  align-items: center; /* Propiedad: centra verticalmente el contenido hijo dentro del contenedor */
+  height: 100vh; /* Propiedad: altura igual a la altura de la ventana gráfica (viewport) */
+  background: linear-gradient(
+    135deg,
+    #4f46e5,
+    #06b6d4
+  ); /* Propiedad: gradiente diagonal de fondo (de morado a cian) */
+  padding: 20px; /* Propiedad: espaciado interno para separarlo de los bordes en pantallas pequeñas */
+} /* Cierre del bloque .login-wrapper .login-bg */
+
+/* Tarjeta de login */ /* Comentario: estilo de la tarjeta que contiene el formulario de inicio de sesión */
+.login-wrapper .login-card {
+  /* Selector: la "tarjeta" blanca centrada que contiene logo, títulos y formulario */
+  background: white; /* Propiedad: fondo blanco de la tarjeta para contraste con el gradiente */
+  padding: 2rem; /* Propiedad: relleno interior amplio alrededor del contenido */
+  border-radius: 1.2rem; /* Propiedad: esquinas redondeadas de la tarjeta */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Propiedad: sombra proyectada para elevar la tarjeta visualmente */
+  width: 100%; /* Propiedad: ancho relativo (permite que respete max-width) */
+  max-width: 380px; /* Propiedad: ancho máximo para evitar que la tarjeta sea demasiado ancha en pantallas grandes */
+  text-align: center; /* Propiedad: centrar el texto dentro de la tarjeta */
+  animation: fadeIn 0.6s ease-in-out; /* Propiedad: animación de entrada definida por @keyframes fadeIn */
+} /* Cierre del bloque .login-wrapper .login-card */
+
+/* Logo */ /* Comentario: área que contiene el logotipo dentro de la tarjeta */
+.login-wrapper .login-logo-wrapper {
+  /* Selector: contenedor del logo para centrarlo y separar espacio inferior */
+  display: flex; /* Propiedad: Flexbox para centrar el logo horizontalmente */
+  justify-content: center; /* Propiedad: centra el logo horizontalmente */
+  margin-bottom: 1rem; /* Propiedad: espacio debajo del logo para separar del título */
+} /* Cierre del bloque .login-wrapper .login-logo-wrapper */
+
+.login-wrapper .login-logo {
+  /* Selector: la imagen o elemento del logo */
+  width: 80px; /* Propiedad: ancho fijo del logo */
+  height: 80px; /* Propiedad: alto fijo del logo para mantener proporción cuadrada */
+  object-fit: cover; /* Propiedad: recorta/escala la imagen para cubrir el contenedor sin deformar */
+  border-radius: 50%; /* Propiedad: hace que el logo sea circular */
+} /* Cierre del bloque .login-wrapper .login-logo */
+
+/* Títulos */ /* Comentario: estilos tipográficos para título y subtítulo dentro de la tarjeta */
+.login-wrapper .login-title {
+  /* Selector: título principal del formulario (ej. "Bienvenido") */
+  font-size: 1.8rem; /* Propiedad: tamaño grande para destacar el título */
+  font-weight: bold; /* Propiedad: peso de fuente en negrita para énfasis */
+  margin: 0; /* Propiedad: elimina margen por defecto para control total del espaciado */
+  color: #1e293b; /* Propiedad: color del texto (gris azulado oscuro) */
+} /* Cierre del bloque .login-wrapper .login-title */
+
+.login-wrapper .login-subtitle {
+  /* Selector: subtítulo o descripción breve bajo el título */
+  font-size: 0.95rem; /* Propiedad: tamaño de fuente ligeramente menor que el título */
+  color: #64748b; /* Propiedad: color gris medio para subtítulo */
+  margin-bottom: 1.5rem; /* Propiedad: espacio inferior mayor para separar del formulario */
+} /* Cierre del bloque .login-wrapper .login-subtitle */
+
+/* Formulario */ /* Comentario: agrupa estilos del formulario y sus campos */
+.login-wrapper .login-form {
+  /* Selector: formulario dentro de la tarjeta */
+  display: flex; /* Propiedad: flex para control del layout vertical */
+  flex-direction: column; /* Propiedad: ordena los elementos en columna (vertical) */
+  gap: 1rem; /* Propiedad: espacio uniforme entre elementos hijos del formulario */
+  text-align: left; /* Propiedad: alinea el texto de los labels a la izquierda */
+} /* Cierre del bloque .login-wrapper .login-form */
+
+.login-wrapper .login-label {
+  /* Selector: etiquetas/labels de los inputs que pueden contener texto + input */
+  font-size: 0.9rem; /* Propiedad: tamaño de texto del label */
+  color: #374151; /* Propiedad: color del label (gris oscuro) */
+  display: flex; /* Propiedad: usar flexbox para alinear contenido interno (p. ej. label + ayuda) */
+  flex-direction: column; /* Propiedad: colocar elementos del label en columna (texto arriba, input abajo) */
+  gap: 0.3rem; /* Propiedad: separación pequeña entre label y su control */
+} /* Cierre del bloque .login-wrapper .login-label */
+
+.login-wrapper .login-input {
+  /* Selector: estilos base para los campos de entrada (input, textarea si aplica) */
+  padding: 0.7rem; /* Propiedad: espaciado interno para campo cómodo al escribir */
+  border: 1px solid #cbd5e1; /* Propiedad: borde gris claro alrededor del input */
+  border-radius: 0.6rem; /* Propiedad: esquinas redondeadas del input */
+  outline: none; /* Propiedad: elimina el outline por defecto del navegador */
+  transition: border 0.2s; /* Propiedad: transición suave cuando cambia el borde (focus) */
+} /* Cierre del bloque .login-wrapper .login-input */
+
+.login-wrapper .login-input:focus {
+  /* Selector: estado cuando el input está enfocado (focus) */
+  border-color: #06b6d4; /* Propiedad: cambia color del borde a cian para indicar foco */
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2); /* Propiedad: halo/contorno leve alrededor del input en foco */
+} /* Cierre del selector :focus de .login-input */
+
+/* Botón */ /* Comentario: estilos del botón principal de envío/iniciar sesión */
+.login-wrapper .login-button {
+  /* Selector: botón de login */
+  padding: 0.8rem; /* Propiedad: espaciado interno vertical cómodo */
+  background: linear-gradient(
+    90deg,
+    #10b981,
+    #06b6d4
+  ); /* Propiedad: degradado horizontal verde->cian */
+  border: none; /* Propiedad: elimina borde por defecto */
+  border-radius: 0.6rem; /* Propiedad: esquinas redondeadas para un botón agradable */
+  color: white; /* Propiedad: color del texto del botón */
+  font-size: 1rem; /* Propiedad: tamaño de letra legible */
+  font-weight: bold; /* Propiedad: texto en negrita para énfasis */
+  cursor: pointer; /* Propiedad: cursor mano para indicar clic */
+  transition: transform 0.2s, background 0.3s; /* Propiedad: animaciones suaves para transform y background */
+} /* Cierre del bloque .login-wrapper .login-button */
+
+.login-wrapper .login-button:hover {
+  /* Selector: estado hover del botón */
+  transform: translateY(
+    -2px
+  ); /* Propiedad: eleva ligeramente el botón al hacer hover */
+  background: linear-gradient(
+    90deg,
+    #059669,
+    #0284c7
+  ); /* Propiedad: cambio de degradado al pasar el cursor */
+} /* Cierre del selector :hover de .login-button */
+
+/* Errores */ /* Comentario: estilo para mostrar mensajes de error en el login */
+.login-wrapper .login-error {
+  /* Selector: mensajes de error (p. ej. credenciales inválidas) */
+  color: #dc2626; /* Propiedad: color rojo para indicar error */
+  font-size: 0.9rem; /* Propiedad: tamaño de texto del mensaje */
+  text-align: center; /* Propiedad: centra el texto del mensaje */
+} /* Cierre del bloque .login-wrapper .login-error */
+
+/* Footer */ /* Comentario: texto secundario o pie dentro de la tarjeta (ej. condiciones, ayuda) */
+.login-wrapper .login-footer {
+  /* Selector: pie de la tarjeta */
+  margin-top: 1.2rem; /* Propiedad: separación superior respecto al formulario */
+  font-size: 0.85rem; /* Propiedad: letra más pequeña para info secundaria */
+  color: #475569; /* Propiedad: color gris azulado para texto secundario */
+} /* Cierre del bloque .login-wrapper .login-footer */
+
+/* Animación */ /* Comentario: keyframes para animar la entrada de la tarjeta */
+@keyframes fadeIn {
+  /* Definición de la animación llamada fadeIn */
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  } /* Estado inicial: translúcido y ligeramente reducido */
+  to {
+    opacity: 1;
+    transform: scale(1);
+  } /* Estado final: opaco y en tamaño normal */
+} /* Cierre de @keyframes fadeIn */
+
+/* Responsividad */ /* Comentario: ajustes para pantallas pequeñas (móviles) */
+@media (max-width: 480px) {
+  /* Media query: aplica reglas para pantallas hasta 480px de ancho */
+  .login-wrapper .login-card {
+    /* Selector dentro del media query: ajusta la tarjeta en móviles */
+    padding: 1.5rem; /* Propiedad: reduce el padding para ahorrar espacio en pantallas pequeñas */
+    max-width: 100%; /* Propiedad: permite que la tarjeta ocupe todo el ancho disponible */
+  } /* Cierre del bloque .login-card dentro del media query */
+
+  .login-wrapper .login-title {
+    /* Selector: ajustar tamaño del título en móvil */
+    font-size: 1.5rem; /* Propiedad: tamaño del título reducido para móviles */
+  } /* Cierre del bloque .login-title dentro del media query */
+
+  .login-wrapper .login-input {
+    /* Selector: ajuste tipográfico de inputs en móvil */
+    font-size: 0.9rem; /* Propiedad: tamaño de fuente para los campos en móviles */
+  } /* Cierre del bloque .login-input dentro del media query */
+
+  .login-wrapper .login-button {
+    /* Selector: ajuste tipográfico del botón en móvil */
+    font-size: 0.9rem; /* Propiedad: tamaño de fuente del botón reducido en móviles */
+  } /* Cierre del bloque .login-button dentro del media query */
+} /* Cierre del media query @media (max-width: 480px) */
+
+/* === MODAL DE BIENVENIDA === */ /* Comentario: sección que define el modal de bienvenida que aparece tras login */
+.login-wrapper .login-modal-overlay {
+  /* Selector: overlay que oscurece el fondo y contiene la tarjeta modal */
+  position: fixed; /* Propiedad: posicionamiento fijo para cubrir toda la ventana */
+  inset: 0; /* Propiedad: shorthand para top:0; right:0; bottom:0; left:0; */
+  background: rgba(
+    15,
+    23,
+    42,
+    0.45
+  ); /* overlay oscuro: color y transparencia para desenfocar visualmente el fondo */
+  display: flex; /* Propiedad: flex para centrar el modal fácilmente */
+  align-items: center; /* Propiedad: centra verticalmente el modal dentro del overlay */
+  justify-content: center; /* Propiedad: centra horizontalmente el modal dentro del overlay */
+  z-index: 1000; /* Propiedad: asegura que el overlay esté por encima del resto del contenido */
+  animation: modalFadeIn 0.28s ease forwards; /* Propiedad: animación para la aparición del overlay */
+} /* Cierre del bloque .login-modal-overlay */
+
+.login-wrapper .login-modal-overlay.closing {
+  /* Selector: estado del overlay cuando se está cerrando (clase .closing) */
+  animation: modalFadeOut 0.28s ease forwards; /* Propiedad: reproduce la animación de salida del overlay */
+} /* Cierre del bloque .login-modal-overlay.closing */
+
+.login-wrapper .login-modal-card {
+  /* Selector: la tarjeta/modal visible encima del overlay */
+  background: #ffffff; /* Propiedad: fondo blanco para la tarjeta modal */
+  width: 340px; /* Propiedad: ancho fijo por defecto para la tarjeta modal */
+  max-width: 90%; /* Propiedad: en pantallas muy pequeñas, la tarjeta no excederá el 90% del ancho */
+  border-radius: 1rem; /* Propiedad: esquinas redondeadas para la tarjeta modal */
+  padding: 1.75rem; /* Propiedad: relleno interno de la tarjeta modal */
+  text-align: center; /* Propiedad: centra el texto del contenido del modal */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22); /* Propiedad: sombra más pronunciada para el modal */
+  animation: modalSlideIn 0.28s ease forwards; /* Propiedad: animación de entrada del modal */
+} /* Cierre del bloque .login-modal-card */
+
+.login-wrapper .login-modal-card.closing {
+  /* Selector: estado cuando la tarjeta modal tiene la clase .closing */
+  animation: modalSlideOut 0.28s ease forwards; /* Propiedad: animación de salida de la tarjeta modal */
+} /* Cierre del bloque .login-modal-card.closing */
+
+.login-wrapper .login-modal-title {
+  /* Selector: título dentro del modal (ej. "Bienvenido!") */
+  font-size: 1.4rem; /* Propiedad: tamaño del título del modal */
+  margin: 0 0 0.75rem 0; /* Propiedad: margen shorthand (top right bottom left) con separación inferior */
+  color: #1e293b; /* Propiedad: color del texto del título del modal */
+} /* Cierre del bloque .login-modal-title */
+
+.login-wrapper .login-modal-message {
+  /* Selector: mensaje de apoyo o descripción dentro del modal */
+  color: #475569; /* Propiedad: color del texto del mensaje (gris) */
+  margin-bottom: 1.25rem; /* Propiedad: espacio inferior para separar del botón */
+} /* Cierre del bloque .login-modal-message */
+
+.login-wrapper .login-modal-button {
+  /* Selector: botón de acción dentro del modal (ej. "Continuar") */
+  padding: 0.7rem 1.4rem; /* Propiedad: padding vertical y horizontal para darle peso al botón */
+  border: none; /* Propiedad: sin borde visible */
+  border-radius: 0.75rem; /* Propiedad: esquinas del botón ligeramente redondeadas */
+  color: #fff; /* Propiedad: texto blanco para contraste con el fondo del botón */
+  font-weight: 700; /* Propiedad: texto en negrita para énfasis */
+  cursor: pointer; /* Propiedad: cursor de mano para indicar que es interactivo */
+  background: linear-gradient(
+    90deg,
+    #10b981,
+    #06b6d4
+  ); /* Propiedad: degradado de fondo del botón modal */
+  transition: transform 0.2s ease; /* Propiedad: transición suave para la transformación (hover) */
+} /* Cierre del bloque .login-modal-button */
+
+.login-wrapper .login-modal-button:hover {
+  /* Selector: hover del botón modal */
+  transform: translateY(
+    -1px
+  ); /* Propiedad: sutil desplazamiento hacia arriba al pasar el cursor */
+} /* Cierre del selector :hover de .login-modal-button */
+
+/* Keyframes */ /* Comentario: animaciones utilizadas por el overlay y el modal */
+@keyframes modalFadeIn {
+  /* Definición de la animación modalFadeIn (overlay) */
+  from {
+    opacity: 0;
+  } /* Estado inicial: totalmente transparente */
+  to {
+    opacity: 1;
+  } /* Estado final: totalmente opaco */
+} /* Cierre de @keyframes modalFadeIn */
+
+@keyframes modalFadeOut {
+  /* Definición de la animación modalFadeOut (overlay salida) */
+  from {
+    opacity: 1;
+  } /* Estado inicial: opaco */
+  to {
+    opacity: 0;
+  } /* Estado final: transparente */
+} /* Cierre de @keyframes modalFadeOut */
+
+@keyframes modalSlideIn {
+  /* Definición de la animación modalSlideIn (tarjeta modal entrada) */
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  } /* Estado inicial: desplazada y ligeramente reducida */
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  } /* Estado final: en su posición y escala normales */
+} /* Cierre de @keyframes modalSlideIn */
+
+@keyframes modalSlideOut {
+  /* Definición de la animación modalSlideOut (tarjeta modal salida) */
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  } /* Estado inicial: visible en su posición */
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.985);
+  } /* Estado final: ligeramente desplazada y semitransparente */
+} /* Cierre de @keyframes modalSlideOut */
+
+/* === Campos de contraseña con botón de ojo === */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pw-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  transition: color 0.2s;
+}
+
+.pw-toggle-btn:hover {
+  color: #0ea5e9;
+}
+
+/* === Animación de logo al éxito === */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-logo {
+  animation: spin 1.6s ease-in-out;
+}
+
+/* === Botones elegantes para enlaces secundarios === */
+.elegant-link {
+  color: #0284c7;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.elegant-link:hover {
+  color: #0ea5e9;
+  transform: translateY(-1px);
+}
+
+.login-desc {
+  color: #475569;
+  text-align: center;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+}
+
+/* === ESTILO VISUAL PARA CÓDIGO OTP (4 DÍGITOS) === */
+.login-wrapper .login-input[placeholder*="Código OTP"] {
+  letter-spacing: 12px; /* separa los dígitos */
+  text-align: center; /* centra el texto */
+  font-size: 1.4rem; /* agranda el tamaño del número */
+  font-weight: 600; /* números más notorios */
+  color: #1e293b; /* tono gris azulado fuerte */
+  border: 2px solid #06b6d4; /* borde cian */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.login-wrapper .login-input[placeholder*="Código OTP"]:focus {
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);
+  border-color: #0ea5e9;
+}
+
+.login-wrapper .login-input[placeholder*="Código OTP"]::placeholder {
+  letter-spacing: normal;
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+/* Efecto de entrada del campo OTP */
+@keyframes popInput {
+  from {
+    transform: scale(0.96);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.login-wrapper .login-input[placeholder*="Código OTP"] {
+  animation: popInput 0.25s ease-in-out;
+}
+
+/* === Campos de contraseña con botón de ojo === */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%; /* ✅ el contenedor siempre ocupa todo el ancho */
+}
+
+.password-wrapper .login-input {
+  flex: 1; /* ✅ el input se expande dentro del flex container */
+  width: 100%; /* refuerzo para compatibilidad */
+  padding-right: 2.5rem; /* ✅ deja espacio interno para el icono del ojo */
+  box-sizing: border-box;
+}
+
+.pw-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  transition: color 0.2s, transform 0.2s;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pw-toggle-btn:hover {
+  color: #0ea5e9;
+  transform: translateY(-50%) scale(1.1); /* sutil efecto hover */
+}
