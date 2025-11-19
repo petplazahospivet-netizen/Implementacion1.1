@@ -1,5 +1,10 @@
 // src/apis/appointmentsApi.js
-const BASE_URL = "http://localhost:5000/api/appointments";
+
+// 🌍 BASE URL dinámica según entorno
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "/api/appointments"
+    : "http://localhost:5000/api/appointments";
 
 export async function getAppointments(estado) {
   const params = estado ? `?estado=${estado}` : "";
