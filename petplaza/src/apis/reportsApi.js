@@ -2,18 +2,15 @@
 import axios from "axios";
 
 /* ==========================================================
-   🌎 CONFIGURACIÓN BASE_URL DINÁMICA
-   Se ajusta automáticamente entre local y producción
+   🌍 BASE URL dinámica según entorno (Local / Render)
 ========================================================== */
-const isLocal =
-  typeof window !== "undefined" && window.location.hostname === "localhost";
-
-const BASE_URL = isLocal
-  ? "http://localhost:5000/api/reports"
-  : "/api/reports";
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "/api/reports"                        // Render (mismo dominio)
+    : "http://localhost:5000/api/reports";  // Local
 
 /* ==========================================================
-   🚀 CLIENTE AXIOS BASE
+   📌 Cliente Axios
 ========================================================== */
 const api = axios.create({
   baseURL: BASE_URL,
