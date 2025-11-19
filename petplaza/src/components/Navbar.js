@@ -52,12 +52,15 @@ const Navbar = ({ user, onLogout }) => {
     }
   };
 
-  // ==================== CAI ====================
+  // ==================== CAI (CORREGIDO PARA RENDER) ====================
   const fetchCAIStatus = async () => {
     try {
-      if (location.pathname === "/Facturacion") {
+      const path = location.pathname.toLowerCase(); // 🔥 Render usa minúsculas
+
+      if (path === "/facturacion") {
         const res = await fetch(`${API_BASE}/api/facturas/loteActivo`);
         if (!res.ok) throw new Error("Error al obtener CAI");
+
         const data = await res.json();
         setAlertaCAI(data.alerta ? data : null);
       } else {
@@ -82,14 +85,14 @@ const Navbar = ({ user, onLogout }) => {
   // ==================== REFRESCO ====================
   useEffect(() => {
     fetchAppointments();
-    fetchCAIStatus();
+    fetchCAIStatus(); // 🔥 ahora funciona en Render
   }, [location.pathname]);
 
   // ==================== INVENTARIO: actualización automática ====================
   useEffect(() => {
     let interval;
     if (location.pathname === "/Inventory") {
-      setInvAlerts(null); // fuerza "Cargando..."
+      setInvAlerts(null);
 
       const lastDataRef = { current: null };
 
@@ -97,7 +100,6 @@ const Navbar = ({ user, onLogout }) => {
         const data = await fetchInventoryAlerts();
         if (!data) return;
 
-        // Compara cambios reales
         const hasChanges =
           JSON.stringify(data.expired) !== JSON.stringify(lastDataRef.current?.expired) ||
           JSON.stringify(data.expiringSoon) !== JSON.stringify(lastDataRef.current?.expiringSoon) ||
@@ -109,19 +111,14 @@ const Navbar = ({ user, onLogout }) => {
         }
       };
 
-      // Llamada inicial
       checkInventory();
-
-      // Intervalo cada 5 segundos
       interval = setInterval(checkInventory, 5000);
     }
 
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+    return () => interval && clearInterval(interval);
   }, [location.pathname]);
 
-  // ==================== CERRAR DROPDOWN AL CLIC FUERA ====================
+  // ==================== CERRAR DROPDOWN ====================
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -153,6 +150,7 @@ const Navbar = ({ user, onLogout }) => {
   return (
     <div className="navbar-wrapper">
       <header className="navbar">
+        
         {/* CAMPANA */}
         <div className="navbar-icon-wrapper" ref={dropdownRef}>
           <button
@@ -183,7 +181,7 @@ const Navbar = ({ user, onLogout }) => {
                 )}
               </div>
 
-              {/* INVENTARIO: Solo en /Inventory */}
+              {/* INVENTARIO */}
               {location.pathname === "/Inventory" && (
                 <div className="notif-section">
                   <h5>📦 Inventario</h5>
@@ -205,9 +203,11 @@ const Navbar = ({ user, onLogout }) => {
               {alertaCAI && (
                 <div className="notif-section">
                   <h5>📄 Estado del Lote CAI</h5>
+
                   {alertaCAI.alerta === "expired" && <p className="text-red-500 font-semibold">⚠️ Lote vencido</p>}
                   {alertaCAI.alerta === "warning" && <p className="text-yellow-500 font-semibold">⚠️ Lote próximo a vencer</p>}
                   {alertaCAI.alerta === "ok" && <p className="text-green-600 font-semibold">🟢 Lote activo</p>}
+
                   <p>Restantes: <strong>{alertaCAI.restantes}</strong></p>
                   <p>Días restantes: <strong>{alertaCAI.diasRestantes}</strong></p>
                   <p>CAI: {alertaCAI.cai}</p>
