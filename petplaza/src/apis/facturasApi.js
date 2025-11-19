@@ -2,20 +2,20 @@
 import axios from "axios";
 
 /* ==========================================================
-    CONFIGURACIÓN UNIVERSAL PARA BACKEND (Render + Local)
+    🌍 BASE URL dinámica según entorno (Local + Render)
 ========================================================== */
 
-//  Detectar si está en entorno local o Render
+//  Detectar si está en entorno local
 const isLocal =
   typeof window !== "undefined" &&
   (window.location.hostname === "localhost" ||
-   window.location.hostname === "127.0.0.1");
+    window.location.hostname === "127.0.0.1");
 
-//  URL base universal
-//  IMPORTANTE: cambia esta variable a tu URL real de Render Backend
-const RENDER_BACKEND_URL = "https://petplaza-backend.onrender.com/api";
-
-const BASE_URL = isLocal ? "http://localhost:5000/api" : RENDER_BACKEND_URL;
+//  En local → usa puerto del backend
+//  En Render → usa el mismo dominio del frontend
+const BASE_URL = isLocal
+  ? "http://localhost:5000/api/facturas"
+  : "/api/facturas";
 
 /* ==========================================================
     CLIENTE AXIOS BASE
@@ -31,7 +31,7 @@ const api = axios.create({
 ========================================================== */
 export const getFacturas = async () => {
   try {
-    const res = await api.get("/facturas");
+    const res = await api.get("/");
     return Array.isArray(res.data) ? res.data : [];
   } catch (error) {
     console.error("❌ Error en getFacturas:", error);
@@ -44,7 +44,7 @@ export const getFacturas = async () => {
 ========================================================== */
 export const createFactura = async (data) => {
   try {
-    const res = await api.post("/facturas", data);
+    const res = await api.post("/", data);
     return res.data;
   } catch (error) {
     console.error("❌ Error en createFactura:", error);
@@ -58,11 +58,11 @@ export const createFactura = async (data) => {
 };
 
 /* ==========================================================
-    ACTUALIZAR FACTURA (solo si NO está cancelada)
+    ACTUALIZAR FACTURA
 ========================================================== */
 export const updateFactura = async (id, data) => {
   try {
-    const res = await api.put(`/facturas/${id}`, data);
+    const res = await api.put(`/${id}`, data);
     return res.data;
   } catch (error) {
     console.error("❌ Error en updateFactura:", error);
@@ -77,7 +77,7 @@ export const updateFactura = async (id, data) => {
 ========================================================== */
 export const updateFacturaEstado = async (id, estado) => {
   try {
-    const res = await api.put(`/facturas/${id}/estado`, { estado });
+    const res = await api.put(`/${id}/estado`, { estado });
     return res.data;
   } catch (error) {
     console.error("❌ Error en updateFacturaEstado:", error);
@@ -93,7 +93,7 @@ export const updateFacturaEstado = async (id, estado) => {
 ========================================================== */
 export const getFacturaById = async (id) => {
   try {
-    const res = await api.get(`/facturas/${id}`);
+    const res = await api.get(`/${id}`);
     return res.data;
   } catch (error) {
     console.error("❌ Error en getFacturaById:", error);
@@ -108,7 +108,7 @@ export const getFacturaById = async (id) => {
 ========================================================== */
 export const getLoteActivo = async () => {
   try {
-    const res = await api.get("/facturas/loteActivo");
+    const res = await api.get("/loteActivo");
     return res.data;
   } catch (error) {
     console.error("❌ Error en getLoteActivo:", error);
