@@ -2,42 +2,36 @@
 import axios from "axios";
 
 /* ============================================================
-   🌐 CONFIGURACIÓN DE ENDPOINT DINÁMICO (Dev / Producción)
+   🌐 BASE_URL DINÁMICA (Local / Render)
 ============================================================ */
 const BASE_URL =
   process.env.NODE_ENV === "production"
-    ? "/api/dashboard"                         // Render (mismo dominio)
-    : "http://localhost:5000/api/dashboard";   // Local
-
-// Cliente Axios
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: { "Content-Type": "application/json" },
-});
+    ? "/api/dashboard"          // Render
+    : "http://localhost:5000/api/dashboard"; // Local
 
 /* ============================================================
    🔹 OBTENER DATOS DEL DASHBOARD
 ============================================================ */
 export const getDashboardData = async () => {
   try {
-    // Llamamos siempre a la raíz del endpoint
-    const res = await api.get("/");
+    const res = await axios.get(BASE_URL);
 
-    console.log("📊 Respuesta cruda de /api/dashboard:", res.data);
-
-    // Soportar dos posibles estructuras:
-    // 1) { data: { ownersCount, ... } }
-    // 2) { ownersCount, petsCount, ... }
-    const payload = res.data?.data ?? res.data;
-
-    if (!payload || typeof payload !== "object") {
-      throw new Error("Estructura de respuesta inválida del servidor");
+    // Validamos backend
+    if (!res.data || !res.data.success) {
+      throw new Error(res.data?.message || "Error obteniendo dashboard");
     }
 
-    // Devuelve directamente el objeto con { ownersCount, petsCount, appointmentsCount, ... }
-    return payload;
+    // Devolvemos el formato REAL del backend
+    return {
+      ownersCount: res.data.ownersCount,
+      petsCount: res.data.petsCount,
+      appointmentsCount: res.data.appointmentsCount,
+      lowStock: res.data.lowStock,
+      lowStockItems: res.data.lowStockItems,
+      recentAppointments: res.data.recentAppointments,
+    };
   } catch (error) {
-    console.error("Error al obtener los datos del dashboard:", error);
+    console.error("❌ Error al obtener los datos del dashboard:", error);
     throw new Error("No se pudieron cargar los datos del dashboard");
   }
 };
