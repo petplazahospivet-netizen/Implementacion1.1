@@ -22,12 +22,12 @@ import {
   createFactura,
   updateFacturaEstado,
   deleteFactura,
+  getLoteActivo,
 } from "../apis/facturasApi";
 import { getOwners } from "../apis/ownersApi";
 import { getPets } from "../apis/petsApi";
 import { getServicios } from "../apis/serviciosApi";
 import { getProducts } from "../apis/productsApi";
-
 // =====================================================
 //  CONFIGURACIÓN UNIVERSAL DE BACKEND (Render + Local)
 // =====================================================
@@ -72,6 +72,7 @@ const Facturacion = ({ user }) => {
   const [facturaAEliminar, setFacturaAEliminar] = useState(null);
 
   // Lote CAI
+  const [loteActivo, setLoteActivo] = useState(null); // 👈 NUEVO
   const [showLoteMenu, setShowLoteMenu] = useState(false);
   const [showLoteModal, setShowLoteModal] = useState(false);
   const [closingLoteModal, setClosingLoteModal] = useState(false);
@@ -82,6 +83,7 @@ const Facturacion = ({ user }) => {
     rangoDesde: "",
     rangoHasta: "",
   });
+
   // Referencias para el menú y el botón de tres puntos
   const loteMenuRef = useRef(null);
   const loteBtnRef = useRef(null);
@@ -315,9 +317,26 @@ const Facturacion = ({ user }) => {
     }));
 
   // ==================== NUEVA / EDICIÓN ====================
-  const openNuevoModal = () => {
+  const openNuevoModal = async () => {
     resetFormFactura();
     setModoEdicion(false);
+
+    try {
+      const data = await getLoteActivo(); // 👈 llamamos a la API
+      if (data?.cai) {
+        setLoteActivo(data); // guardamos el lote activo
+      } else {
+        setLoteActivo(null);
+        notify(
+          "⚠️ No hay un lote CAI activo. Configúralo en Gestión de Lote CAI."
+        );
+      }
+    } catch (e) {
+      console.error("Error obteniendo lote activo:", e);
+      setLoteActivo(null);
+      notify("Error obteniendo el lote CAI activo");
+    }
+
     setShowNuevoModal(true);
   };
 
@@ -422,6 +441,21 @@ const Facturacion = ({ user }) => {
       total,
       ...(modoEdicion ? {} : { estado: estadoFactura }),
     };
+
+    // 👇 SOLO exigimos lote activo cuando es NUEVA factura
+    if (!modoEdicion) {
+      if (!loteActivo) {
+        notify(
+          "⚠️ No hay un lote CAI activo. Configúralo en Gestión de Lote CAI."
+        );
+        return;
+      }
+
+      payload.cai = loteActivo.cai;
+      payload.caiRangoDesde = loteActivo.rangoDesde;
+      payload.caiRangoHasta = loteActivo.rangoHasta;
+      payload.caiFechaLimite = loteActivo.fechaLimite;
+    }
 
     try {
       if (modoEdicion && facturaEditando?._id) {
@@ -738,7 +772,12 @@ const Facturacion = ({ user }) => {
   /* ==========================================================
      🚀 RENDER PRINCIPAL DEL COMPONENTE
   ========================================================== */
-  if ((!user || user.role !== "admin" && user.role !== "veterinario" && user.role !== "recepcion")) {
+  if (
+    !user ||
+    (user.role !== "admin" &&
+      user.role !== "veterinario" &&
+      user.role !== "recepcion")
+  ) {
     return (
       <div className="facturacion-no-permissions">
         🚫 No tienes permisos para ver La Gestión de Facturación.
