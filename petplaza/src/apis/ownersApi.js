@@ -1,17 +1,30 @@
 // src/apis/ownersApi.js
 import axios from "axios";
 
-const isLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
-const BASE_URL = isLocal ? "http://localhost:5000/api/owners" : "/api/owners";
+/* ==========================================================
+   🌍 BASE URL dinámica según entorno (Local / Render)
+========================================================== */
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "/api/owners"                     // Render (mismo dominio)
+    : "http://localhost:5000/api/owners"; // Local
 
+/* ==========================================================
+   📌 Cliente Axios
+========================================================== */
 const api = axios.create({
-  baseURL: BASE_URL.replace("/api/owners", ""),
+  baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 
+/* ==========================================================
+   📋 FUNCIONES DE OWNERS
+========================================================== */
+
+// Obtener todos
 export const getOwners = async () => {
   try {
-    const res = await api.get("/api/owners");
+    const res = await api.get("/");
     return Array.isArray(res.data) ? res.data : [];
   } catch (err) {
     console.error("❌ Error obteniendo dueños:", err);
@@ -19,6 +32,20 @@ export const getOwners = async () => {
   }
 };
 
-export const createOwner = async (data) => (await api.post("/api/owners", data)).data;
-export const updateOwner = async (id, data) => (await api.put(`/api/owners/${id}`, data)).data;
-export const deleteOwner = async (id) => (await api.delete(`/api/owners/${id}`)).data;
+// Crear
+export const createOwner = async (data) => {
+  const res = await api.post("/", data);
+  return res.data;
+};
+
+// Actualizar
+export const updateOwner = async (id, data) => {
+  const res = await api.put(`/${id}`, data);
+  return res.data;
+};
+
+// Eliminar
+export const deleteOwner = async (id) => {
+  const res = await api.delete(`/${id}`);
+  return res.data;
+};
