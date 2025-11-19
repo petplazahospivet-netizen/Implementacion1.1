@@ -2,18 +2,16 @@
 import axios from "axios";
 
 /* =====================================================
-   🌐 CONFIGURACIÓN BASE
-   Detecta entorno local o producción automáticamente
+   🌐 BASE URL DINÁMICA (Local / Render)
 ===================================================== */
-const isLocal =
-  typeof window !== "undefined" && window.location.hostname === "localhost";
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "/api/expedientes"
+    : "http://localhost:5000/api/expedientes";
 
-const BASE_URL = isLocal
-  ? "http://localhost:5000/api/expedientes"
-  : "/api/expedientes";
-
+// Cliente Axios directo
 const api = axios.create({
-  baseURL: BASE_URL.replace("/api/expedientes", ""),
+  baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -24,7 +22,7 @@ const api = axios.create({
 // 🔹 Obtener todos los expedientes
 export const getExpedientes = async () => {
   try {
-    const res = await api.get("/api/expedientes");
+    const res = await api.get("/");
     return Array.isArray(res.data) ? res.data : [];
   } catch (err) {
     console.error("❌ Error obteniendo expedientes:", err);
@@ -35,7 +33,7 @@ export const getExpedientes = async () => {
 // 🔹 Obtener expediente por ID
 export const getExpedienteById = async (id) => {
   try {
-    const res = await api.get(`/api/expedientes/${id}`);
+    const res = await api.get(`/${id}`);
     return res.data;
   } catch (err) {
     console.error("❌ Error obteniendo expediente:", err);
@@ -47,7 +45,7 @@ export const getExpedienteById = async (id) => {
 export const searchExpedientes = async (params) => {
   try {
     const query = new URLSearchParams(params).toString();
-    const res = await api.get(`/api/expedientes/buscar/filtros?${query}`);
+    const res = await api.get(`/buscar/filtros?${query}`);
     return Array.isArray(res.data) ? res.data : [];
   } catch (err) {
     console.error("❌ Error buscando expedientes:", err);
@@ -58,7 +56,7 @@ export const searchExpedientes = async (params) => {
 // 🔹 Crear nuevo expediente
 export const createExpediente = async (data) => {
   try {
-    const res = await api.post("/api/expedientes", data);
+    const res = await api.post("/", data);
     return res.data;
   } catch (err) {
     console.error("❌ Error creando expediente:", err);
@@ -69,7 +67,7 @@ export const createExpediente = async (data) => {
 // 🔹 Actualizar expediente existente
 export const updateExpediente = async (id, data) => {
   try {
-    const res = await api.put(`/api/expedientes/${id}`, data);
+    const res = await api.put(`/${id}`, data);
     return res.data;
   } catch (err) {
     console.error("❌ Error actualizando expediente:", err);
@@ -80,7 +78,7 @@ export const updateExpediente = async (id, data) => {
 // 🔹 Eliminar expediente
 export const deleteExpediente = async (id) => {
   try {
-    const res = await api.delete(`/api/expedientes/${id}`);
+    const res = await api.delete(`/${id}`);
     return res.data;
   } catch (err) {
     console.error("❌ Error eliminando expediente:", err);
