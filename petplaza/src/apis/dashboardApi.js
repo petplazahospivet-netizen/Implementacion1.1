@@ -1,10 +1,12 @@
 import axios from "axios";
 
 /* ============================================================
-   🌐 CONFIGURACIÓN DE ENDPOINT
+   🌐 CONFIGURACIÓN DE ENDPOINT DINÁMICO (Dev / Producción)
    ============================================================ */
-const BASE_URL = "http://localhost:5000/api/dashboard";
-//const BASE_URL = "/api/dashboard";
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "/api/dashboard"
+    : "http://localhost:5000/api/dashboard";
 
 /* ============================================================
    🔹 OBTENER DATOS DEL DASHBOARD
