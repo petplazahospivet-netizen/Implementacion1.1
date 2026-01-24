@@ -7,11 +7,15 @@ const path = require("path");
    ⚙️ TRANSPORTE GMAIL (usa las credenciales de tu .env)
    ========================================================== */
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,      // SSL
+  secure: true,   // true = SSL
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  logger: true,   // muestra logs de SMTP en consola
+  debug: true,    // muestra la comunicación con Gmail
 });
 
 /* ==========================================================
