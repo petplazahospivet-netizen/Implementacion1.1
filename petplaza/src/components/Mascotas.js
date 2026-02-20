@@ -43,14 +43,14 @@ const Mascotas = ({ user }) => {
   const [closingDelete, setClosingDelete] = useState(false);
   const [mascotaAEliminar, setMascotaAEliminar] = useState(null);
 
-  // ---- Toast moderno (como Dueños) ----
+  // ---- Toast moderno ----
   const [toast, setToast] = useState({
     show: false,
     type: "success",
     message: "",
   });
 
-  // ---- Form ---- (usar nombres en español, como tu backend)
+  // ---- Form ----
   const [nuevaMascota, setNuevaMascota] = useState({
     nombre: "",
     especie: "",
@@ -69,6 +69,30 @@ const Mascotas = ({ user }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ================================
+    // 🚨 VALIDACIÓN ESTRICTA
+    // ================================
+    const camposRequeridos = [
+      "nombre",
+      "especie",
+      "raza",
+      "nacimiento",
+      "sexo",
+      "peso",
+      "color",
+      "ownerId",
+    ];
+
+    const faltantes = camposRequeridos.filter(
+      (campo) => !nuevaMascota[campo] || nuevaMascota[campo].toString().trim() === ""
+    );
+
+    if (faltantes.length > 0) {
+      showToast("error", "Debes completar todos los campos antes de guardar");
+      return;
+    }
+
     try {
       if (modoEdicion) {
         const resp = await updatePet(mascotaEditando._id, nuevaMascota);
@@ -156,7 +180,7 @@ const Mascotas = ({ user }) => {
     }
   };
 
-  // ---- Cargar datos desde API ----
+  // ---- Cargar datos ----
   useEffect(() => {
     (async () => {
       try {
@@ -172,15 +196,13 @@ const Mascotas = ({ user }) => {
     })();
   }, []);
 
-  // ======================= Toast =======================
+  // ---- Toast ----
   const showToast = (type, message) => {
     setToast({ show: true, type, message });
     setTimeout(() => setToast((t) => ({ ...t, show: false })), 3000);
   };
 
-  /* ==========================================================
-     🚀 RENDER PRINCIPAL DEL COMPONENTE
-  ========================================================== */
+  /* ======= PERMISOS ======= */
   if ((!user || user.role !== "admin" && user.role !== "veterinario" && user.role !== "recepcion")) {
     return (
       <div className="mascotas-no-permissions">
@@ -191,6 +213,7 @@ const Mascotas = ({ user }) => {
 
   return (
     <div className="mascotas-container">
+
       {/* Header */}
       <div className="mascotas-header">
         <div
@@ -220,7 +243,7 @@ const Mascotas = ({ user }) => {
         <FaSearch className="search-icon" aria-hidden="true" />
       </div>
 
-      {/* Grid de tarjetas */}
+      {/* Grid */}
       <div className="mascotas-grid">
         {filteredMascotas.map((mascota) => (
           <div className="mascota-card" key={mascota._id}>
@@ -253,11 +276,7 @@ const Mascotas = ({ user }) => {
             <p>
               <FaCalendarAlt /> Nacimiento:{" "}
               {mascota.nacimiento
-                ? mascota.nacimiento
-                    .substring(0, 10)
-                    .split("-")
-                    .reverse()
-                    .join("/")
+                ? mascota.nacimiento.substring(0, 10).split("-").reverse().join("/")
                 : "No registrado"}
             </p>
             <p>
@@ -350,6 +369,7 @@ const Mascotas = ({ user }) => {
                   name="raza"
                   value={nuevaMascota.raza}
                   onChange={handleChange}
+                  required
                 />
               </label>
 
@@ -360,6 +380,7 @@ const Mascotas = ({ user }) => {
                   name="nacimiento"
                   value={nuevaMascota.nacimiento}
                   onChange={handleChange}
+                  required
                 />
               </label>
 
@@ -385,6 +406,7 @@ const Mascotas = ({ user }) => {
                   value={nuevaMascota.peso}
                   onChange={handleChange}
                   step="0.1"
+                  required
                 />
               </label>
 
@@ -395,6 +417,7 @@ const Mascotas = ({ user }) => {
                   name="color"
                   value={nuevaMascota.color}
                   onChange={handleChange}
+                  required
                 />
               </label>
 
@@ -445,7 +468,7 @@ const Mascotas = ({ user }) => {
         </div>
       )}
 
-      {/* Toast moderno con estilos del CSS */}
+      {/* Toast */}
       {toast.show && (
         <div
           role="status"
