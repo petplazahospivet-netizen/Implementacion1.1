@@ -7,27 +7,27 @@ import {
   Clock,
   Calculator,
   Eye,
-  Trash2,
   Plus,
   X,
   MoreVertical,
   Edit3,
+  AlertTriangle,
+  AlertCircle,
+  CheckCircle2,
 } from "lucide-react";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import logo1 from "../assets/logo1.png";
 
 import {
   getFacturas,
   createFactura,
   updateFacturaEstado,
-  deleteFactura,
-  getLoteActivo,
 } from "../apis/facturasApi";
 import { getOwners } from "../apis/ownersApi";
 import { getPets } from "../apis/petsApi";
 import { getServicios } from "../apis/serviciosApi";
 import { getProducts } from "../apis/productsApi";
+
 // =====================================================
 //  CONFIGURACIÓN UNIVERSAL DE BACKEND (Render + Local)
 // =====================================================
@@ -36,12 +36,29 @@ const isLocal =
   (window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1");
 
-// 👉 en local usa el backend en :5000
-// 👉 en producción usa el mismo dominio del front (ruta /api)
-const BACKEND_URL = isLocal ? "http://localhost:5000/api" : "/api";
+const BACKEND_URL = isLocal
+  ? "http://localhost:5000/api"
+  : "https://petplaza-backend.onrender.com/api";
 
-const Facturacion = ({ user }) => {
-  const localUser = JSON.parse(localStorage.getItem("user"));
+export default function Facturacion() {
+  const user = JSON.parse(localStorage.getItem("user"));
+    const getToken = () => {
+    const savedUser = JSON.parse(localStorage.getItem("user") || "null");
+    return (
+      localStorage.getItem("token") ||
+      localStorage.getItem("authToken") ||
+      savedUser?.token ||
+      ""
+    );
+  };
+
+  const getAuthHeaders = (includeJson = true) => {
+    const token = getToken();
+    return {
+      ...(includeJson ? { "Content-Type": "application/json" } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+  };
 
   // ==================== ESTADOS BASE ====================
   const [facturas, setFacturas] = useState([]);
@@ -52,9 +69,13 @@ const Facturacion = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Notificaciones
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState("");
+  // Toasts
+  const [toast, setToast] = useState({
+    show: false,
+    type: "success", // success | warning | error
+    message: "",
+  });
+  const toastTimeoutRef = useRef(null);
 
   // Modales
   const [showNuevoModal, setShowNuevoModal] = useState(false);
@@ -71,7 +92,6 @@ const Facturacion = ({ user }) => {
   const [facturaAEliminar, setFacturaAEliminar] = useState(null);
 
   // Lote CAI
-  const [loteActivo, setLoteActivo] = useState(null); // 👈 NUEVO
   const [showLoteMenu, setShowLoteMenu] = useState(false);
   const [showLoteModal, setShowLoteModal] = useState(false);
   const [closingLoteModal, setClosingLoteModal] = useState(false);
@@ -89,10 +109,10 @@ const Facturacion = ({ user }) => {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      // Si el clic no fue dentro del menú ni del botón, cierra el menú
       if (
         loteMenuRef.current &&
         !loteMenuRef.current.contains(e.target) &&
+        loteBtnRef.current &&
         !loteBtnRef.current.contains(e.target)
       ) {
         setShowLoteMenu(false);
@@ -102,6 +122,7 @@ const Facturacion = ({ user }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     };
   }, []);
 
@@ -117,10 +138,17 @@ const Facturacion = ({ user }) => {
   });
 
   // ==================== HELPERS ====================
-  const notify = (msg) => {
-    setNotificationMessage(msg);
-    setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 1800);
+  const notify = (message, type = "success") => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setToast({ show: true, type, message });
+    toastTimeoutRef.current = setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 2800);
+  };
+
+  const normalizeNumber = (value) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
   };
 
   const currency = (n) =>
@@ -146,6 +174,18 @@ const Facturacion = ({ user }) => {
     setFacturaEditando(null);
   };
 
+  const getFetchErrorMessage = (e, defaultMessage) => {
+    const msg = e?.message || "";
+    if (
+      msg.toLowerCase().includes("failed to fetch") ||
+      msg.toLowerCase().includes("network") ||
+      msg.toLowerCase().includes("load failed")
+    ) {
+      return "Error de conexión con el servidor.";
+    }
+    return msg || defaultMessage;
+  };
+
   // ==================== CARGA INICIAL ====================
   useEffect(() => {
     const cargarTodo = async () => {
@@ -165,7 +205,7 @@ const Facturacion = ({ user }) => {
         setProductos(prs || []);
       } catch (e) {
         console.error(e);
-        notify("Error cargando datos");
+        notify(getFetchErrorMessage(e, "Error cargando datos."), "error");
       } finally {
         setLoading(false);
       }
@@ -193,6 +233,7 @@ const Facturacion = ({ user }) => {
       ),
     [formData.servicios]
   );
+
   const subtotalProductos = useMemo(
     () =>
       formData.productos.reduce(
@@ -202,13 +243,18 @@ const Facturacion = ({ user }) => {
       ),
     [formData.productos]
   );
+
   const subtotal = subtotalServicios + subtotalProductos;
 
   const descuentoTotal = useMemo(() => {
-    const v = Number(formData.descuentoValor || 0);
-    return formData.descuentoTipo === "porcentaje"
-      ? Math.min(subtotal * (v / 100), subtotal)
-      : Math.min(v, subtotal);
+    const v = Math.max(0, normalizeNumber(formData.descuentoValor));
+
+    if (formData.descuentoTipo === "porcentaje") {
+      const porcentajeValido = Math.min(v, 100);
+      return Math.min(subtotal * (porcentajeValido / 100), subtotal);
+    }
+
+    return Math.min(v, subtotal);
   }, [formData.descuentoTipo, formData.descuentoValor, subtotal]);
 
   const baseImponible = Math.max(subtotal - descuentoTotal, 0);
@@ -238,7 +284,9 @@ const Facturacion = ({ user }) => {
   const addServicio = (servicioId) => {
     const s = servicios.find((x) => x._id === servicioId);
     if (!s) return;
+
     const precio = Number(s.precio ?? s.price ?? 0);
+
     setFormData((prev) => ({
       ...prev,
       servicios: [
@@ -276,6 +324,7 @@ const Facturacion = ({ user }) => {
       ],
     }));
   };
+
   const updListQty = (list, id, delta) =>
     list
       .map((i) =>
@@ -283,25 +332,21 @@ const Facturacion = ({ user }) => {
           ? {
               ...i,
               cantidad: Math.max(0, Number(i.cantidad || 0) + delta),
-              subtotal: Math.max(
-                0,
-                Number(i.precio || i.price) * (Number(i.cantidad || 0) + delta)
-              ),
+              subtotal:
+                Math.max(
+                  0,
+                  Number(i.precio || i.price) * (Number(i.cantidad || 0) + delta)
+                ),
             }
           : i
       )
       .filter((i) => (i.cantidad || 0) > 0);
 
   const updServQty = (id, delta) =>
-    setFormData((s) => ({
-      ...s,
-      servicios: updListQty(s.servicios, id, delta),
-    }));
+    setFormData((s) => ({ ...s, servicios: updListQty(s.servicios, id, delta) }));
+
   const updProdQty = (id, delta) =>
-    setFormData((s) => ({
-      ...s,
-      productos: updListQty(s.productos, id, delta),
-    }));
+    setFormData((s) => ({ ...s, productos: updListQty(s.productos, id, delta) }));
 
   const delServ = (id) =>
     setFormData((s) => ({
@@ -316,31 +361,13 @@ const Facturacion = ({ user }) => {
     }));
 
   // ==================== NUEVA / EDICIÓN ====================
-  const openNuevoModal = async () => {
+  const openNuevoModal = () => {
     resetFormFactura();
     setModoEdicion(false);
-
-    try {
-      const data = await getLoteActivo(); // 👈 llamamos a la API
-      if (data?.cai) {
-        setLoteActivo(data); // guardamos el lote activo
-      } else {
-        setLoteActivo(null);
-        notify(
-          "⚠️ No hay un lote CAI activo. Configúralo en Gestión de Lote CAI."
-        );
-      }
-    } catch (e) {
-      console.error("Error obteniendo lote activo:", e);
-      setLoteActivo(null);
-      notify("Error obteniendo el lote CAI activo");
-    }
-
     setShowNuevoModal(true);
   };
 
   const openEditModal = (f) => {
-    // Mapeo de la factura al formulario
     setModoEdicion(true);
     setFacturaEditando(f);
     setFormData({
@@ -379,26 +406,50 @@ const Facturacion = ({ user }) => {
     }, 180);
   };
 
-  // ==================== CREAR / EDITAR / ESTADO / Cancela ====================
+  // ==================== CREAR / EDITAR / ESTADO / CANCELA ====================
   const handleGuardarFactura = async () => {
-    if (!formData.cliente.ownerId || !formData.mascota.petId)
-      return notify("Selecciona dueño y mascota");
-    if (formData.cliente.rtn && !/^\d{14}$/.test(formData.cliente.rtn))
-      return notify("RTN inválido (14 dígitos)");
-    if (!formData.metodoPago) return notify("Selecciona método de pago");
-    if (subtotal <= 0) return notify("Agrega un servicio o producto");
+    if (!formData.cliente.ownerId || !formData.mascota.petId) {
+      return notify("Selecciona dueño y mascota.", "warning");
+    }
 
-    // Estado por defecto solo al crear
+    if (formData.cliente.rtn && !/^\d{14}$/.test(formData.cliente.rtn)) {
+      return notify("El RTN debe tener exactamente 14 dígitos numéricos.", "warning");
+    }
+
+    if (!formData.metodoPago) {
+      return notify("Selecciona un método de pago.", "warning");
+    }
+
+    if (subtotal <= 0) {
+      return notify("Agrega al menos un servicio o producto.", "warning");
+    }
+
+    const descuentoIngresado = normalizeNumber(formData.descuentoValor);
+
+    if (descuentoIngresado < 0) {
+      return notify("El descuento no puede ser negativo.", "warning");
+    }
+
+    if (
+      formData.descuentoTipo === "porcentaje" &&
+      descuentoIngresado > 100
+    ) {
+      return notify(
+        "El descuento en porcentaje no puede ser mayor a 100.",
+        "warning"
+      );
+    }
+
     let estadoFactura = "Pagado";
     if (!modoEdicion) {
       if (
         formData.metodoPago === "Tarjeta" ||
         formData.metodoPago === "Transferencia"
-      )
+      ) {
         estadoFactura = "Pendiente";
+      }
     }
 
-    //  Incluimos todos los datos necesarios
     const owner = owners.find((o) => o._id === formData.cliente.ownerId);
     const pet = pets.find((p) => p._id === formData.mascota.petId);
 
@@ -421,17 +472,19 @@ const Facturacion = ({ user }) => {
         nombre: s.nombre,
         precio: Number(s.precio ?? s.price ?? 0),
         cantidad: Number(s.cantidad || 1),
-        subtotal: Number(s.precio ?? s.price ?? 0) * Number(s.cantidad || 1),
+        subtotal:
+          Number(s.precio ?? s.price ?? 0) * Number(s.cantidad || 1),
       })),
       productos: formData.productos.map((p) => ({
         productId: p.productId || p._id,
         nombre: p.nombre ?? p.name,
         precio: Number(p.precio ?? p.price ?? 0),
         cantidad: Number(p.cantidad || 1),
-        subtotal: Number(p.precio ?? p.price ?? 0) * Number(p.cantidad || 1),
+        subtotal:
+          Number(p.precio ?? p.price ?? 0) * Number(p.cantidad || 1),
       })),
       descuentoTipo: formData.descuentoTipo,
-      descuentoValor: Number(formData.descuentoValor || 0),
+      descuentoValor: Math.max(0, Number(formData.descuentoValor || 0)),
       metodoPago: formData.metodoPago,
       subtotal,
       descuentoTotal,
@@ -441,64 +494,57 @@ const Facturacion = ({ user }) => {
       ...(modoEdicion ? {} : { estado: estadoFactura }),
     };
 
-    // 👇 SOLO exigimos lote activo cuando es NUEVA factura
-    if (!modoEdicion) {
-      if (!loteActivo) {
-        notify(
-          "⚠️ No hay un lote CAI activo. Configúralo en Gestión de Lote CAI."
-        );
-        return;
-      }
-
-      payload.cai = loteActivo.cai;
-      payload.caiRangoDesde = loteActivo.rangoDesde;
-      payload.caiRangoHasta = loteActivo.rangoHasta;
-      payload.caiFechaLimite = loteActivo.fechaLimite;
-    }
-
     try {
       if (modoEdicion && facturaEditando?._id) {
-        // PUT directo (frontend-only por ahora)
-        const res = await fetch(
-          `${BACKEND_URL}/facturas/${facturaEditando._id}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
+        const res = await fetch(`${BACKEND_URL}/facturas/${facturaEditando._id}`, {
+          method: "PUT",
+          headers: getAuthHeaders(true),
+          body: JSON.stringify(payload),
+        });
         const data = await res.json();
-        if (!res.ok)
-          throw new Error(data?.mensaje || "Error actualizando factura");
+        if (!res.ok) throw new Error(data?.mensaje || "Error actualizando factura");
+
         const actualizada = data?.factura || data;
         setFacturas((prev) =>
           prev.map((x) => (x._id === actualizada._id ? actualizada : x))
         );
-        notify("Factura actualizada");
+        notify("Factura actualizada correctamente.", "success");
       } else {
         const created = await createFactura(payload);
         const nueva = created?.factura || created;
         if (!nueva?._id) throw new Error("Error creando factura");
+
         setFacturas((prev) => [nueva, ...prev]);
-        notify("Factura creada correctamente");
+        notify("Factura creada correctamente.", "success");
       }
+
       closeNuevoModal();
     } catch (e) {
       console.error(e);
-      notify(e.message || "Error guardando factura");
+      notify(getFetchErrorMessage(e, "Ocurrió un error guardando la factura."), "error");
     }
   };
 
   const toggleEstado = async (f) => {
+    if (f.estado === "Cancelado") {
+      return notify("La factura cancelada no puede cambiar de estado.", "warning");
+    }
+
+    if (f.estado === "Pagado") {
+      return notify(
+        "La factura ya está pagada y no puede volver a pendiente.",
+        "warning"
+      );
+    }
+
     try {
-      const nuevoEstado = f.estado === "Pagado" ? "Pendiente" : "Pagado";
-      const updated = await updateFacturaEstado(f._id, nuevoEstado);
+      const updated = await updateFacturaEstado(f._id, "Pagado");
       const nf = updated?.factura || updated;
       setFacturas((prev) => prev.map((x) => (x._id === f._id ? nf : x)));
-      notify("Estado actualizado");
+      notify("Factura marcada como pagada.", "success");
     } catch (e) {
       console.error(e);
-      notify("Error actualizando estado");
+      notify(getFetchErrorMessage(e, "Error actualizando estado."), "error");
     }
   };
 
@@ -506,8 +552,8 @@ const Facturacion = ({ user }) => {
   //   CANCELACIÓN DE FACTURA
   // =====================================================
   const askCancel = (f) => {
-    if (f.estado === "Cancelado") return; // evita re-cancelar
-    setFacturaAEliminar(f); // reusamos el mismo state
+    if (f.estado === "Cancelado") return;
+    setFacturaAEliminar(f);
     setShowConfirm(true);
   };
 
@@ -522,21 +568,19 @@ const Facturacion = ({ user }) => {
 
   const handleCancelFactura = async () => {
     try {
-      const updated = await updateFacturaEstado(
-        facturaAEliminar._id,
-        "Cancelado"
-      );
+      const updated = await updateFacturaEstado(facturaAEliminar._id, "Cancelado");
       const nf = updated?.factura || updated;
       setFacturas((prev) =>
         prev.map((x) => (x._id === facturaAEliminar._id ? nf : x))
       );
       closeConfirmModal();
       notify(
-        `Factura #${facturaAEliminar.numero || ""} cancelada correctamente`
+        `Factura #${facturaAEliminar.numero || ""} cancelada correctamente.`,
+        "success"
       );
     } catch (e) {
       console.error(e);
-      notify("Error cancelando factura");
+      notify(getFetchErrorMessage(e, "Error cancelando factura."), "error");
     }
   };
 
@@ -550,35 +594,47 @@ const Facturacion = ({ user }) => {
     }, 180);
   };
 
-  const cargarLotes = async () => {
+    const cargarLotes = async () => {
     try {
       setLoadingLotes(true);
-      const res = await fetch(`${BACKEND_URL}/lotes`);
+      console.log("[DEBUG] Token being sent:", getToken());
+      const res = await fetch(`${BACKEND_URL}/lotes`, {
+        method: "GET",
+        headers: getAuthHeaders(false),
+      });
+      console.log("[DEBUG] Response status:", res.status);
+      console.log("[DEBUG] Response headers:", res.headers);
       const data = await res.json();
+      console.log("[DEBUG] Response data:", data);
+      if (!res.ok) {
+        throw new Error(data?.mensaje || "No autorizado para consultar lotes");
+      }
       setLotes(Array.isArray(data) ? data : []);
     } catch (e) {
-      console.error(e);
-      notify("Error cargando lotes");
+      console.error("Error en cargarLotes:", e);
+      notify(e.message || "Error cargando lotes");
     } finally {
       setLoadingLotes(false);
     }
   };
 
-  const crearLote = async (e) => {
+    const crearLote = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch(`${BACKEND_URL}/lotes`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(true),
         body: JSON.stringify(nuevoLote),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.mensaje || "Error creando lote");
+      if (!res.ok) {
+        throw new Error(data?.mensaje || "Error creando lote");
+      }
       notify("Lote creado correctamente");
       setNuevoLote({ cai: "", rangoDesde: "", rangoHasta: "" });
       await cargarLotes();
     } catch (e) {
-      console.error(e);
+      console.error("Error en crearLote:", e);
       notify(e.message || "Error creando lote");
     }
   };
@@ -587,26 +643,40 @@ const Facturacion = ({ user }) => {
     try {
       const res = await fetch(`${BACKEND_URL}/lotes/${id}/activar`, {
         method: "PUT",
+        headers: getAuthHeaders(true),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.mensaje || "Error activando lote");
+      if (!res.ok) {
+        throw new Error(data?.mensaje || "Error activando lote");
+      }
       notify("Lote activado");
       await cargarLotes();
     } catch (e) {
-      console.error(e);
+      console.error("Error en activarLote:", e);
       notify(e.message || "Error activando lote");
     }
   };
 
   useEffect(() => {
-    if (showLoteModal) cargarLotes();
-  }, [showLoteModal]);
+  if (!showLoteModal) return;
 
-  // ==================== PREVIEW / PDF ====================
+  const token = getToken();
+  if (!token) {
+    console.warn("No hay token disponible todavía para cargar lotes.");
+    return;
+  }
+
+  setLoadingLotes(true);
+  setLotes([]);
+  cargarLotes();
+}, [showLoteModal]);
+
+  // ==================== PREVIEW / PDF TÉRMICO ====================
   const openPreview = (f) => {
     setFacturaSeleccionada(f);
     setShowPreview(true);
   };
+
   const closePreview = () => {
     setClosingPreview(true);
     setTimeout(() => {
@@ -616,178 +686,200 @@ const Facturacion = ({ user }) => {
     }, 180);
   };
 
-  const generarPDF = (f) => {
-    const doc = new jsPDF({ unit: "pt", format: "letter" });
-    const m = 40;
-    let y = 40;
-    try {
-      // Intento dibujar el logo (PNG importado) a color
-      doc.addImage(logo1, "PNG", m, y - 4, 90, 48);
-    } catch (_) {}
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.setTextColor(7, 90, 60);
-    doc.text("ALM INVESIONES SRL", m + 100 + 8, y + 12);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10.5);
-    doc.setTextColor(30);
-    doc.text(" PETPLAZA HOSPIVET", m + 100 + 8, y + 28);
-    doc.text(
-      "Tegucigalpa, Ave. La Paz | Tel: +504 2242-5850",
-      m + 100 + 8,
-      y + 42
-    );
-    doc.text("LEOVETEQUI@GMAIL.COM  | 0801-9016-859530", m + 100 + 8, y + 56);
-
-    // Datos a la derecha
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(15);
-    doc.setTextColor(20);
-    doc.text(`FACTURA ${numFactura(f)}`, 555, y + 8, { align: "right" });
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.setTextColor(30);
-    doc.text(`Fecha: ${safeDate(f.fecha || f.createdAt)}`, 555, y + 26, {
-      align: "right",
-    });
-    doc.text(`Estado: ${f.estado}`, 555, y + 40, { align: "right" });
-    doc.text(`Método: ${f.metodoPago}`, 555, y + 54, { align: "right" });
-
-    // ===== Bloque fiscal =====
-    y += 70;
-    doc.setDrawColor(5, 150, 105);
-    doc.setTextColor(30);
-    doc.roundedRect(m, y, 520, 62, 8, 8);
-    doc.setFont("helvetica", "bold");
-    doc.text("INFORMACIÓN FISCAL (HONDURAS)", m + 10, y + 18);
-    doc.setFont("helvetica", "normal");
-    doc.text(`CAI: ${f.cai}`, m + 10, y + 36);
-    doc.text(
-      `Rango autorizado: ${f.caiRangoDesde} a ${
-        f.caiRangoHasta
-      }      Fecha límite: ${safeDate(f.caiFechaLimite)}`,
-      m + 10,
-      y + 52
-    );
-
-    // ===== Cliente / Mascota =====
-    y += 90;
-    doc.setFont("helvetica", "bold");
-    doc.text("DATOS DEL CLIENTE", m, y);
-    doc.text("DATOS DE LA MASCOTA", 360, y);
-    doc.setFont("helvetica", "normal");
-    y += 16;
-    doc.text(`Nombre: ${f.cliente?.nombre || "-"}`, m, y);
-    doc.text(`Nombre: ${f.mascota?.nombre || "-"}`, 360, y);
-    y += 14;
-    doc.text(`RTN: ${f.cliente?.rtn || "-"}`, m, y);
-    doc.text(`Especie: ${f.mascota?.especie || "-"}`, 360, y);
-    y += 14;
-    doc.text(`Teléfono: ${f.cliente?.telefono || "-"}`, m, y);
-    doc.text(`Raza: ${f.mascota?.raza || "-"}`, 360, y);
-
-    // ===== Detalle =====
-    y += 22;
-    const bodyRows = [];
-
-    // SERVICIOS
-    (f.servicios || []).forEach((s) => {
-      const nombre = s.nombre ?? "Servicio";
-      const cant = Number(s.cantidad || 0);
-      const pu = Number(s.precio ?? s.price ?? s.unitPrice ?? 0);
-      bodyRows.push([
-        nombre,
-        cant,
-        `L ${pu.toFixed(2)}`,
-        `L ${(pu * cant).toFixed(2)}`,
-      ]);
-    });
-
-    // PRODUCTOS
-    (f.productos || []).forEach((p) => {
-      const nombre = p.nombre ?? p.name ?? "Producto";
-      const cant = Number(p.cantidad || 0);
-      const pu = Number(p.precio ?? p.price ?? 0);
-      bodyRows.push([
-        nombre,
-        cant,
-        `L ${pu.toFixed(2)}`,
-        `L ${(pu * cant).toFixed(2)}`,
-      ]);
-    });
-
-    autoTable(doc, {
-      head: [["Descripción", "Cant.", "Precio Unit.", "Total"]],
-      body: bodyRows,
-      startY: y,
-      theme: "grid",
-      styles: { fontSize: 10, cellPadding: 6 },
-      headStyles: {
-        fillColor: [5, 150, 105],
-        textColor: 255,
-        fontStyle: "bold",
-      },
-      margin: { left: m, right: m },
-    });
-
-    let endY = doc.lastAutoTable.finalY || y;
-    endY += 10;
-
-    const filasTotales = [
-      ["Subtotal", `L ${Number(f.subtotal || 0).toFixed(2)}`],
+  const generarPDF_Termica = (f) => {
+    const items = [
+      ...(f.servicios || []).map((s) => ({
+        nombre: s.nombre ?? "Servicio",
+        cantidad: Number(s.cantidad || 0),
+        precio: Number(s.precio ?? s.price ?? s.unitPrice ?? 0),
+      })),
+      ...(f.productos || []).map((p) => ({
+        nombre: p.nombre ?? p.name ?? "Producto",
+        cantidad: Number(p.cantidad || 0),
+        precio: Number(p.precio ?? p.price ?? 0),
+      })),
     ];
-    if (Number(f.descuentoTotal || 0) > 0) {
-      filasTotales.push([
-        "Descuento",
-        `L ${Number(f.descuentoTotal || 0).toFixed(2)}`,
-      ]);
-      filasTotales.push([
-        "Base imponible",
-        `L ${Number(f.baseImponible || 0).toFixed(2)}`,
-      ]);
-    }
-    filasTotales.push(["ISV (15%)", `L ${Number(f.impuesto || 0).toFixed(2)}`]);
-    filasTotales.push(["TOTAL", `L ${Number(f.total || 0).toFixed(2)}`]);
 
-    autoTable(doc, {
-      body: filasTotales,
-      startY: endY,
-      theme: "plain",
-      styles: { fontSize: 11 },
-      columnStyles: { 0: { fontStyle: "bold" } },
-      margin: { left: 360, right: m },
+    const alturaBase = 120;
+    const alturaPorItem = 8;
+    const alturaFinal = alturaBase + items.length * alturaPorItem + 45;
+
+    const doc = new jsPDF({
+      unit: "mm",
+      format: [80, alturaFinal],
     });
 
-    // ===== Pie de página =====
-    const pageH = doc.internal.pageSize.getHeight();
-    doc.setFont("helvetica", "italic");
-    doc.setFontSize(10);
-    doc.setTextColor(90);
-    doc.text("Gracias por confiar en PetPlaza Hospivet 🐾 ", m, pageH - 24);
+    const pageWidth = 80;
+    const centerX = pageWidth / 2;
+    const marginX = 4;
+    let y = 8;
 
-    doc.save(`Factura_${numFactura(f)}.pdf`);
+    const line = () => {
+      doc.setLineWidth(0.2);
+      doc.line(marginX, y, pageWidth - marginX, y);
+      y += 4;
+    };
+
+    try {
+      doc.addImage(logo1, "PNG", 25, y, 30, 14);
+      y += 16;
+    } catch (err) {
+      console.warn("Logo térmico no cargado:", err);
+    }
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("PETPLAZA HOSPIVET", centerX, y, { align: "center" });
+    y += 5;
+
+    doc.setFontSize(9);
+    doc.text("ALM INVERSIONES SRL", centerX, y, { align: "center" });
+    y += 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text("Ave. La Paz, Tegucigalpa", centerX, y, { align: "center" });
+    y += 3.5;
+    doc.text("Tel: +504 2242-5850", centerX, y, { align: "center" });
+    y += 3.5;
+    doc.text("RTN: 0801-9016-859530", centerX, y, { align: "center" });
+    y += 4;
+
+    line();
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.text(`FACTURA: ${numFactura(f)}`, marginX, y);
+    y += 4.5;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text(`Fecha: ${safeDate(f.fecha || f.createdAt)}`, marginX, y);
+    y += 3.8;
+    doc.text(`Estado: ${f.estado}`, marginX, y);
+    y += 3.8;
+    doc.text(`Metodo: ${f.metodoPago}`, marginX, y);
+    y += 4;
+
+    line();
+
+    doc.setFont("helvetica", "bold");
+    doc.text("CLIENTE", marginX, y);
+    y += 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.text(`Nombre: ${f.cliente?.nombre || "-"}`, marginX, y);
+    y += 3.8;
+    doc.text(`RTN: ${f.cliente?.rtn || "-"}`, marginX, y);
+    y += 3.8;
+    doc.text(`Tel: ${f.cliente?.telefono || "-"}`, marginX, y);
+    y += 4;
+
+    line();
+
+    doc.setFont("helvetica", "bold");
+    doc.text("MASCOTA", marginX, y);
+    y += 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.text(`Nombre: ${f.mascota?.nombre || "-"}`, marginX, y);
+    y += 3.8;
+    doc.text(`Especie: ${f.mascota?.especie || "-"}`, marginX, y);
+    y += 3.8;
+    doc.text(`Raza: ${f.mascota?.raza || "-"}`, marginX, y);
+    y += 4;
+
+    line();
+
+    doc.setFont("helvetica", "bold");
+    doc.text("DETALLE", marginX, y);
+    y += 4;
+
+    doc.setFont("helvetica", "normal");
+    items.forEach((item) => {
+      const totalLinea = item.cantidad * item.precio;
+      const nombre =
+        item.nombre.length > 24
+          ? `${item.nombre.slice(0, 24)}...`
+          : item.nombre;
+
+      doc.text(nombre, marginX, y);
+      y += 3.6;
+      doc.text(
+        `${item.cantidad} x L ${item.precio.toFixed(2)} = L ${totalLinea.toFixed(2)}`,
+        marginX,
+        y
+      );
+      y += 4.2;
+    });
+
+    line();
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Subtotal: L ${Number(f.subtotal || 0).toFixed(2)}`, marginX, y);
+    y += 4;
+    doc.text(
+      `Descuento: L ${Number(f.descuentoTotal || 0).toFixed(2)}`,
+      marginX,
+      y
+    );
+    y += 4;
+    doc.text(`ISV: L ${Number(f.impuesto || 0).toFixed(2)}`, marginX, y);
+    y += 4;
+    doc.text(`TOTAL: L ${Number(f.total || 0).toFixed(2)}`, marginX, y);
+    y += 5;
+
+    line();
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.text(`CAI: ${f.cai || "-"}`, marginX, y);
+    y += 3.5;
+    doc.text(
+      `Rango: ${f.caiRangoDesde || "-"} a ${f.caiRangoHasta || "-"}`,
+      marginX,
+      y
+    );
+    y += 3.5;
+    doc.text(`Limite: ${safeDate(f.caiFechaLimite)}`, marginX, y);
+    y += 5;
+
+    line();
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text("GRACIAS POR SU VISITA", centerX, y, {
+      align: "center",
+    });
+    y += 4;
+    doc.text("LA FACTURA ES BENEFICIO DE TODOS, EXIJALA", centerX, y, {
+      align: "center",
+    });
+
+    doc.save(`Factura_Termica_${numFactura(f)}.pdf`);
   };
 
-  /* ==========================================================
-     🚀 RENDER PRINCIPAL DEL COMPONENTE
-  ========================================================== */
-  if (
-    !user ||
-    (user.role !== "admin" &&
-      user.role !== "veterinario" &&
-      user.role !== "recepcion")
-  ) {
-    return (
-      <div className="facturacion-no-permissions">
-        🚫 No tienes permisos para ver La Gestión de Facturación.
-      </div>
+  const toastIcon =
+    toast.type === "success" ? (
+      <CheckCircle2 size={18} />
+    ) : toast.type === "warning" ? (
+      <AlertTriangle size={18} />
+    ) : (
+      <AlertCircle size={18} />
     );
-  }
 
   // ==================== UI ====================
   return (
     <div className="facturacion-container">
-      {/* Header principal */}
+      {toast.show && (
+        <div className={`facturacion-notification-${toast.type} show`}>
+          <div className="facturacion-toast-content">
+            {toastIcon}
+            <span>{toast.message}</span>
+          </div>
+        </div>
+      )}
+
       <div className="facturacion-header">
         <div className="facturacion-header-left">
           <h1 className="facturacion-title">Gestión de Facturación</h1>
@@ -796,7 +888,6 @@ const Facturacion = ({ user }) => {
           </p>
         </div>
 
-        {/* Menú 3 puntos */}
         <div className="facturacion-header-actions">
           <button
             ref={loteBtnRef}
@@ -815,13 +906,13 @@ const Facturacion = ({ user }) => {
                   setShowLoteModal(true);
                 }}
               >
-                📘 Gestión de Lote CAI
+                Gestión de Lote CAI
               </button>
             </div>
           )}
         </div>
       </div>
-      {/* Estadísticas (compactas) */}
+
       <div className="facturacion-stats small">
         <div className="stat-card blue">
           <FileText size={22} />
@@ -858,7 +949,7 @@ const Facturacion = ({ user }) => {
           </div>
         </div>
       </div>
-      {/* Buscador + Botón Nueva Factura  */}
+
       <div className="facturacion-search mejorada">
         <input
           type="text"
@@ -870,7 +961,7 @@ const Facturacion = ({ user }) => {
           <Plus size={15} /> Nueva Factura
         </button>
       </div>
-      {/* Tabla */}
+
       <div className="facturacion-table-container">
         <table className="facturacion-table">
           <thead>
@@ -888,19 +979,13 @@ const Facturacion = ({ user }) => {
           <tbody>
             {loading ? (
               <tr>
-                <td
-                  colSpan="8"
-                  style={{ textAlign: "center", padding: "1rem" }}
-                >
+                <td colSpan="8" style={{ textAlign: "center", padding: "1rem" }}>
                   Cargando...
                 </td>
               </tr>
             ) : facturasFiltradas.length === 0 ? (
               <tr>
-                <td
-                  colSpan="8"
-                  style={{ textAlign: "center", padding: "1rem" }}
-                >
+                <td colSpan="8" style={{ textAlign: "center", padding: "1rem" }}>
                   No hay facturas registradas
                 </td>
               </tr>
@@ -911,9 +996,7 @@ const Facturacion = ({ user }) => {
                   <td>{safeDate(f.fecha || f.createdAt)}</td>
                   <td>{f.cliente?.nombre}</td>
                   <td>{f.mascota?.nombre}</td>
-                  <td className="facturacion-total-amount">
-                    {currency(f.total)}
-                  </td>
+                  <td className="facturacion-total-amount">{currency(f.total)}</td>
                   <td>
                     <span className="facturacion-metodo-pago-badge">
                       {f.metodoPago}
@@ -922,9 +1005,21 @@ const Facturacion = ({ user }) => {
                   <td>
                     <button
                       className={`facturacion-status-btn ${
-                        f.estado === "Pagado" ? "pagado" : "pendiente"
-                      }`}
+                        f.estado === "Pagado"
+                          ? "pagado"
+                          : f.estado === "Cancelado"
+                          ? "cancelado"
+                          : "pendiente"
+                      } ${f.estado !== "Pendiente" ? "disabled" : ""}`}
                       onClick={() => toggleEstado(f)}
+                      disabled={f.estado !== "Pendiente"}
+                      title={
+                        f.estado === "Pendiente"
+                          ? "Marcar como pagada"
+                          : f.estado === "Pagado"
+                          ? "La factura pagada ya no puede cambiar de estado"
+                          : "La factura cancelada no puede cambiar de estado"
+                      }
                     >
                       {f.estado}
                     </button>
@@ -950,9 +1045,7 @@ const Facturacion = ({ user }) => {
                         style={{
                           opacity: f.estado === "Cancelado" ? 0.5 : 1,
                           cursor:
-                            f.estado === "Cancelado"
-                              ? "not-allowed"
-                              : "pointer",
+                            f.estado === "Cancelado" ? "not-allowed" : "pointer",
                         }}
                       >
                         <Edit3 size={16} />
@@ -977,7 +1070,7 @@ const Facturacion = ({ user }) => {
           </tbody>
         </table>
       </div>
-      {/* =================== MODAL PREVIEW =================== */}
+
       {showPreview && facturaSeleccionada && (
         <div
           className={`facturacion-modal-overlay ${
@@ -988,32 +1081,29 @@ const Facturacion = ({ user }) => {
             className={`facturacion-modal facturacion-modal-preview ${
               closingPreview ? "closing" : "active"
             }`}
-            onClick={(e) => e.stopPropagation()} //  Evita cierre al hacer clic fuera
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="facturacion-modal-header">
               <h2>Vista Previa de Factura</h2>
-              <div style={{ display: "flex", gap: ".5rem" }}>
+              <div className="facturacion-preview-buttons">
                 <button
-                  className="facturacion-btn-secondary"
-                  onClick={() => generarPDF(facturaSeleccionada)}
+                  className="facturacion-btn-termica"
+                  onClick={() => generarPDF_Termica(facturaSeleccionada)}
+                  title="Imprimir en formato térmico"
                 >
-                  Imprimir / Descargar
+                  Imprimir ticket
                 </button>
-                <button
-                  className="facturacion-close-btn"
-                  onClick={closePreview}
-                >
+
+                <button className="facturacion-close-btn" onClick={closePreview}>
                   <X size={16} />
                 </button>
               </div>
             </div>
 
-            {/* === Contenido de la Vista Previa === */}
             <div className="facturacion-factura-container">
               <div className="facturacion-factura-header">
                 <div className="facturacion-factura-empresa">
                   <h2>PetPlaza Hospivet</h2>
-                  <div>Centro Médico Veterinario y Tienda de Mascotas</div>
                   <div>Tegucigalpa, Ave. La Paz | Tel: +504 2242-5850</div>
                   <div>leovetequi@gmail.com | RTN: 0801-9016-859530</div>
                 </div>
@@ -1038,7 +1128,6 @@ const Facturacion = ({ user }) => {
                 </div>
               </div>
 
-              {/* === Bloque Fiscal === */}
               <div className="facturacion-fiscal-box">
                 <div>
                   <strong>CAI:</strong> {facturaSeleccionada.cai}
@@ -1052,17 +1141,14 @@ const Facturacion = ({ user }) => {
                 </div>
               </div>
 
-              {/* === Datos del Cliente === */}
               <div className="facturacion-form-row">
                 <div className="facturacion-card">
                   <h3>Datos del Cliente</h3>
                   <div>
-                    <strong>Nombre:</strong>{" "}
-                    {facturaSeleccionada.cliente?.nombre}
+                    <strong>Nombre:</strong> {facturaSeleccionada.cliente?.nombre}
                   </div>
                   <div>
-                    <strong>Mascota:</strong>{" "}
-                    {facturaSeleccionada.mascota?.nombre}
+                    <strong>Mascota:</strong> {facturaSeleccionada.mascota?.nombre}
                   </div>
                   <div>
                     <strong>RTN:</strong>{" "}
@@ -1078,7 +1164,6 @@ const Facturacion = ({ user }) => {
                 </div>
               </div>
 
-              {/* === Tabla Detalle === */}
               <table className="facturacion-detalles-table">
                 <thead>
                   <tr>
@@ -1094,9 +1179,7 @@ const Facturacion = ({ user }) => {
                       <td data-label="Descripción">{s.nombre}</td>
                       <td data-label="Cantidad">{s.cantidad}</td>
                       <td data-label="Precio Unitario">
-                        {currency(
-                          Number(s.precio ?? s.price ?? s.unitPrice ?? 0)
-                        )}
+                        {currency(Number(s.precio ?? s.price ?? s.unitPrice ?? 0))}
                       </td>
                       <td data-label="Total">
                         {currency(
@@ -1123,7 +1206,6 @@ const Facturacion = ({ user }) => {
                 </tbody>
               </table>
 
-              {/* === Totales === */}
               <div className="facturacion-factura-totales">
                 <div className="facturacion-total-row">
                   <span>Subtotal</span>
@@ -1133,15 +1215,11 @@ const Facturacion = ({ user }) => {
                   <>
                     <div className="facturacion-total-row">
                       <span>Descuento</span>
-                      <strong>
-                        {currency(facturaSeleccionada.descuentoTotal)}
-                      </strong>
+                      <strong>{currency(facturaSeleccionada.descuentoTotal)}</strong>
                     </div>
                     <div className="facturacion-total-row">
                       <span>Base imponible</span>
-                      <strong>
-                        {currency(facturaSeleccionada.baseImponible)}
-                      </strong>
+                      <strong>{currency(facturaSeleccionada.baseImponible)}</strong>
                     </div>
                   </>
                 )}
@@ -1158,13 +1236,13 @@ const Facturacion = ({ user }) => {
           </div>
         </div>
       )}
-      {/* =================== MODAL NUEVA/EDICIÓN =================== */}
+
       {showNuevoModal && (
         <div
           className={`facturacion-modal-overlay ${
             closingNuevoModal ? "closing" : "active"
           }`}
-          onClick={(e) => e.stopPropagation()} // 🚫 Evita cierre al hacer clic fuera
+          onClick={(e) => e.stopPropagation()}
         >
           <div
             className={`facturacion-modal ${
@@ -1173,15 +1251,11 @@ const Facturacion = ({ user }) => {
           >
             <div className="facturacion-modal-header">
               <h2>{modoEdicion ? "Editar Factura" : "Nueva Factura"}</h2>
-              <button
-                className="facturacion-close-btn"
-                onClick={closeNuevoModal}
-              >
+              <button className="facturacion-close-btn" onClick={closeNuevoModal}>
                 <X size={16} />
               </button>
             </div>
 
-            {/* Dueño/Mascota */}
             <div className="facturacion-form-section">
               <div className="facturacion-form-row">
                 <div className="facturacion-form-group">
@@ -1202,6 +1276,7 @@ const Facturacion = ({ user }) => {
                     ))}
                   </select>
                 </div>
+
                 <div className="facturacion-form-group">
                   <label>Mascota *</label>
                   <select
@@ -1228,7 +1303,6 @@ const Facturacion = ({ user }) => {
                 </div>
               </div>
 
-              {/* RTN / Método de pago */}
               <div className="facturacion-form-row">
                 <div className="facturacion-form-group">
                   <label>RTN (14 dígitos)</label>
@@ -1247,6 +1321,7 @@ const Facturacion = ({ user }) => {
                     placeholder="08011999001234"
                   />
                 </div>
+
                 <div className="facturacion-form-group">
                   <label>Método de pago *</label>
                   <select
@@ -1265,15 +1340,10 @@ const Facturacion = ({ user }) => {
               </div>
             </div>
 
-            {/* Servicios */}
             <div className="facturacion-form-section">
               <h3>Servicios</h3>
               <div className="facturacion-form-group">
-                <select
-                  onChange={(e) =>
-                    e.target.value && addServicio(e.target.value)
-                  }
-                >
+                <select onChange={(e) => e.target.value && addServicio(e.target.value)}>
                   <option value="">Seleccionar servicio</option>
                   {servicios.map((s, i) => (
                     <option
@@ -1294,26 +1364,20 @@ const Facturacion = ({ user }) => {
                   >
                     <div className="facturacion-item-info">
                       <div className="facturacion-item-name">{it.nombre}</div>
-                      <div className="facturacion-item-price">
-                        {currency(it.precio)}
-                      </div>
+                      <div className="facturacion-item-price">{currency(it.precio)}</div>
                     </div>
                     <div className="facturacion-item-controls">
                       <div className="facturacion-quantity-control">
                         <button
                           type="button"
-                          onClick={() =>
-                            updServQty(it.servicioId || it._id, -1)
-                          }
+                          onClick={() => updServQty(it.servicioId || it._id, -1)}
                         >
                           –
                         </button>
                         <span>{it.cantidad || 1}</span>
                         <button
                           type="button"
-                          onClick={() =>
-                            updServQty(it.servicioId || it._id, +1)
-                          }
+                          onClick={() => updServQty(it.servicioId || it._id, +1)}
                         >
                           +
                         </button>
@@ -1334,30 +1398,25 @@ const Facturacion = ({ user }) => {
               </div>
             </div>
 
-            {/* Productos */}
             <div className="facturacion-form-section">
               <h3>Productos</h3>
               <div className="facturacion-form-group">
-                <select
-                  onChange={(e) =>
-                    e.target.value && addProducto(e.target.value)
-                  }
-                >
+                <select onChange={(e) => e.target.value && addProducto(e.target.value)}>
                   <option value="">Seleccionar producto</option>
                   {productos
-                    .filter((p) => Number(p.quantity ?? 0) > 0) // 🔹 solo muestra si hay stock disponible
+                    .filter((p) => Number(p.quantity ?? 0) > 0)
                     .map((p, i) => (
                       <option
                         key={p._id || p.id || `prod-${i}`}
                         value={p._id || p.id}
                       >
                         {p.name || p.nombre} —{" "}
-                        {currency(p.price ?? p.precio ?? 0)} (Stock:{" "}
-                        {p.quantity})
+                        {currency(p.price ?? p.precio ?? 0)} (Stock: {p.quantity})
                       </option>
                     ))}
                 </select>
               </div>
+
               <div className="facturacion-items-list">
                 {formData.productos.map((it, i) => {
                   const precio = Number(it.precio ?? it.price ?? 0);
@@ -1370,26 +1429,20 @@ const Facturacion = ({ user }) => {
                         <div className="facturacion-item-name">
                           {it.nombre || it.name}
                         </div>
-                        <div className="facturacion-item-price">
-                          {currency(precio)}
-                        </div>
+                        <div className="facturacion-item-price">{currency(precio)}</div>
                       </div>
                       <div className="facturacion-item-controls">
                         <div className="facturacion-quantity-control">
                           <button
                             type="button"
-                            onClick={() =>
-                              updProdQty(it.productId || it._id, -1)
-                            }
+                            onClick={() => updProdQty(it.productId || it._id, -1)}
                           >
                             –
                           </button>
                           <span>{it.cantidad || 1}</span>
                           <button
                             type="button"
-                            onClick={() =>
-                              updProdQty(it.productId || it._id, +1)
-                            }
+                            onClick={() => updProdQty(it.productId || it._id, +1)}
                           >
                             +
                           </button>
@@ -1411,7 +1464,6 @@ const Facturacion = ({ user }) => {
               </div>
             </div>
 
-            {/* Descuentos */}
             <div className="facturacion-form-section">
               <h3>Descuentos</h3>
               <div className="facturacion-form-row">
@@ -1430,32 +1482,55 @@ const Facturacion = ({ user }) => {
                     <option value="porcentaje">Porcentaje (%)</option>
                   </select>
                 </div>
+
                 <div className="facturacion-form-group">
                   <label>Valor</label>
                   <input
                     type="number"
                     min="0"
+                    step="0.01"
                     value={formData.descuentoValor}
-                    onChange={(e) =>
-                      setFormData((s) => ({
-                        ...s,
-                        descuentoValor: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => {
+                      const value = e.target.value;
+
+                      if (value === "") {
+                        setFormData((s) => ({ ...s, descuentoValor: "" }));
+                        return;
+                      }
+
+                      const n = Number(value);
+
+                      if (n < 0) {
+                        notify("El descuento no puede ser negativo.", "warning");
+                        return;
+                      }
+
+                      if (
+                        formData.descuentoTipo === "porcentaje" &&
+                        n > 100
+                      ) {
+                        notify(
+                          "El descuento en porcentaje no puede ser mayor a 100.",
+                          "warning"
+                        );
+                        setFormData((s) => ({ ...s, descuentoValor: 100 }));
+                        return;
+                      }
+
+                      setFormData((s) => ({ ...s, descuentoValor: value }));
+                    }}
                   />
                 </div>
               </div>
             </div>
 
-            {/* Totales */}
             <div className="facturacion-form-section">
               <div className="facturacion-form-totals">
                 <div className="facturacion-total-row">
                   <span>Subtotal:</span> <strong>{currency(subtotal)}</strong>
                 </div>
                 <div className="facturacion-total-row">
-                  <span>Descuento:</span>{" "}
-                  <strong>- {currency(descuentoTotal)}</strong>
+                  <span>Descuento:</span> <strong>- {currency(descuentoTotal)}</strong>
                 </div>
                 <div className="facturacion-total-row">
                   <span>Base imponible:</span>{" "}
@@ -1470,30 +1545,18 @@ const Facturacion = ({ user }) => {
               </div>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: ".5rem",
-              }}
-            >
-              <button
-                className="facturacion-btn-secondary"
-                onClick={closeNuevoModal}
-              >
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: ".5rem" }}>
+              <button className="facturacion-btn-secondary" onClick={closeNuevoModal}>
                 Cancelar
               </button>
-              <button
-                className="facturacion-btn-primary"
-                onClick={handleGuardarFactura}
-              >
+              <button className="facturacion-btn-primary" onClick={handleGuardarFactura}>
                 {modoEdicion ? "Guardar Cambios" : "Generar Factura"}
               </button>
             </div>
           </div>
         </div>
       )}
-      {/* =================== MODAL CONFIRM (CANCELAR FACTURA) =================== */}
+
       {showConfirm && (
         <div
           className={`facturacion-modal-overlay ${
@@ -1504,32 +1567,27 @@ const Facturacion = ({ user }) => {
             className={`facturacion-modal facturacion-confirm-modal ${
               closingConfirm ? "closing" : "active"
             }`}
-            onClick={(e) => e.stopPropagation()} // Evita cierre al hacer clic fuera
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* ======== CABECERA ======== */}
             <div className="facturacion-modal-header">
               <h2>Confirmar Cancelación</h2>
-              <button
-                className="facturacion-close-btn"
-                onClick={closeConfirmModal}
-              >
+              <button className="facturacion-close-btn" onClick={closeConfirmModal}>
                 <X size={16} />
               </button>
             </div>
 
-            {/* ======== CONTENIDO ======== */}
             <div className="facturacion-confirm-content">
               <p>
                 ¿Deseas cancelar la factura{" "}
                 <strong>{numFactura(facturaAEliminar)}</strong> de{" "}
-                <strong>{facturaAEliminar?.cliente?.nombre}</strong>?<br />
+                <strong>{facturaAEliminar?.cliente?.nombre}</strong>?
+                <br />
                 <span style={{ color: "#b91c1c", fontWeight: "600" }}>
                   Esta acción marcará la factura como CANCELADA y no podrá
                   modificarse ni cambiar su estado.
                 </span>
               </p>
 
-              {/* ======== BOTONES ======== */}
               <div className="facturacion-confirm-actions">
                 <button
                   className="facturacion-btn-secondary"
@@ -1548,7 +1606,7 @@ const Facturacion = ({ user }) => {
           </div>
         </div>
       )}
-      {/* =================== MODAL LOTE CAI =================== */}
+
       {showLoteModal && (
         <div
           className={`facturacion-modal-overlay ${
@@ -1559,19 +1617,15 @@ const Facturacion = ({ user }) => {
             className={`facturacion-modal ${
               closingLoteModal ? "closing" : "active"
             }`}
-            onClick={(e) => e.stopPropagation()} // Evita cierre fuera
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="facturacion-modal-header">
               <h2>Gestión de Lote CAI</h2>
-              <button
-                className="facturacion-close-btn"
-                onClick={closeLoteModal}
-              >
+              <button className="facturacion-close-btn" onClick={closeLoteModal}>
                 <X size={16} />
               </button>
             </div>
 
-            {/* === HISTORIAL DE LOTES === */}
             <div className="facturacion-form-section">
               <h3>Historial de Lotes CAI</h3>
               {loadingLotes ? (
@@ -1601,11 +1655,7 @@ const Facturacion = ({ user }) => {
                         <tr
                           key={l._id}
                           className={
-                            l.activo
-                              ? "lote-activo"
-                              : vencido
-                              ? "lote-vencido"
-                              : ""
+                            l.activo ? "lote-activo" : vencido ? "lote-vencido" : ""
                           }
                         >
                           <td>{l.cai}</td>
@@ -1618,13 +1668,9 @@ const Facturacion = ({ user }) => {
                             {l.activo ? (
                               <span className="estado-lote activo">Activo</span>
                             ) : vencido ? (
-                              <span className="estado-lote vencido">
-                                Vencido
-                              </span>
+                              <span className="estado-lote vencido">Vencido</span>
                             ) : (
-                              <span className="estado-lote inactivo">
-                                Inactivo
-                              </span>
+                              <span className="estado-lote inactivo">Inactivo</span>
                             )}
                           </td>
                           {user?.role === "admin" && (
@@ -1647,7 +1693,6 @@ const Facturacion = ({ user }) => {
               )}
             </div>
 
-            {/* === REGISTRO DE NUEVO LOTE === */}
             {user?.role === "admin" && (
               <div className="facturacion-form-section">
                 <h3>Registrar nuevo lote CAI</h3>
@@ -1660,7 +1705,8 @@ const Facturacion = ({ user }) => {
 
                     if (!regexCAI.test(nuevoLote.cai)) {
                       notify(
-                        "⚠️ El CAI debe contener solo letras, números y guiones (10 a 40 caracteres)."
+                        "El CAI debe contener solo letras, números y guiones (10 a 40 caracteres).",
+                        "warning"
                       );
                       return;
                     }
@@ -1670,14 +1716,16 @@ const Facturacion = ({ user }) => {
                       !regexRango.test(nuevoLote.rangoHasta)
                     ) {
                       notify(
-                        "⚠️ Formato de rango inválido. Use 000-001-01-00000001"
+                        "Formato de rango inválido. Use 000-001-01-00000001.",
+                        "warning"
                       );
                       return;
                     }
 
                     if (nuevoLote.rangoDesde >= nuevoLote.rangoHasta) {
                       notify(
-                        "⚠️ El rango final debe ser mayor que el inicial."
+                        "El rango final debe ser mayor que el inicial.",
+                        "warning"
                       );
                       return;
                     }
@@ -1745,14 +1793,6 @@ const Facturacion = ({ user }) => {
           </div>
         </div>
       )}
-      {/* TOAST */}{" "}
-      {showNotification && (
-        <div className="facturacion-notification-success show">
-          ✅ {notificationMessage}
-        </div>
-      )}{" "}
     </div>
   );
-};
-
-export default Facturacion;
+}
